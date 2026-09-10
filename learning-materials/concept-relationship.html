@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大模型 · Agent · Skill · 上下文：概念关系</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15);
+  --purple50:#EEEDFE; --purple600:#534AB7; --purple800:#3C3489;
+  --teal50:#E1F5EE; --teal800:#085041;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.8}
+.wrap{max-width:860px;margin:0 auto;padding:40px 20px 60px}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--purple600);font-weight:600;margin-bottom:12px}
+h1{font-size:32px;font-weight:700;line-height:1.35;margin-bottom:10px}
+h2{font-size:23px;font-weight:700;margin:40px 0 14px;padding-top:18px;border-top:.5px solid var(--line)}
+.lead{font-size:16px;color:var(--muted);margin-bottom:20px}
+.big-idea{background:var(--purple50);border-radius:var(--r);padding:22px 26px;font-size:18px;font-weight:600;color:var(--purple800);text-align:center;margin:18px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:14px 0}
+th,td{border:.5px solid var(--line);padding:9px 13px;text-align:left;vertical-align:top}
+th{background:var(--surface);font-weight:600}
+.quote{border-left:3px solid var(--purple600);padding:6px 0 6px 16px;color:var(--muted);margin:16px 0}
+.mermaid{background:var(--surface);border-radius:var(--r);padding:18px;margin:14px 0;display:flex;justify-content:center}
+.final{background:var(--teal50);border-radius:var(--r);padding:22px 26px;font-size:17px;font-weight:600;color:var(--teal800);text-align:center;margin-top:30px}
+.meta{font-size:13px;color:var(--faint);margin-top:30px}
+a{color:var(--purple600)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">大数据与人工智能 · 概念关系总结</div>
+  <h1>大模型、Agent、Skill 与上下文：<br>四个概念到底什么关系？</h1>
+  <p class="lead">统一类比贯穿全文：<b>大模型是脑子，Agent 是用这个脑子干活的人，上下文是这个人此刻桌上的白板，Skill 是他口袋里的岗位手册。</b>（需要联网加载关系图）</p>
+
+  <div class="big-idea">脑子想 · 白板看 · 口袋装 · 一双手干活</div>
+
+  <h2>一、四个概念的定位</h2>
+  <table>
+    <tr><th>概念</th><th>类比角色</th><th>一句话定义</th><th>权威出处</th></tr>
+    <tr><td><b>大模型（LLM）</b></td><td>脑子 🧠</td><td>会读白板、会推理、能生成内容的"思考引擎"</td><td>IBM《What is a context window?》</td></tr>
+    <tr><td><b>Agent</b></td><td>干活的人 🧑‍💻</td><td>在循环中根据反馈使用工具、自主完成任务的系统</td><td>Anthropic《Building Effective Agents》</td></tr>
+    <tr><td><b>上下文（Context）</b></td><td>桌上的白板 📋</td><td>此刻能被脑子"看见"的全部信息：说明书、对话、资料、工具结果</td><td>Anthropic《Effective Context Engineering》/ IBM</td></tr>
+    <tr><td><b>Skill</b></td><td>口袋里的手册 📔</td><td>把"某件事怎么做"写成文件，需要时加载进白板照做</td><td>agentskills.io 开放规范</td></tr>
+  </table>
+
+  <h2>二、三者如何连接（总关系图）</h2>
+  <div class="mermaid">
+flowchart LR
+    subgraph 外部世界
+        USER[👤 用户下达目标]
+        TOOLS[🛠 工具：搜索/文件/代码执行]
+    end
+    subgraph AgentBox["Agent（干活的人）"]
+        LLM[🧠 大模型：负责想]
+        CTX[📋 上下文：白板]
+        SKILL[📔 Skill：岗位手册库]
+    end
+    USER -->|目标写上白板| CTX
+    CTX <-->|每一步都读| LLM
+    LLM -->|决定用什么| TOOLS
+    TOOLS -->|结果写回白板| CTX
+    SKILL -.->|任务匹配时，翻开对应手册| CTX
+    LLM -.->|干活的宝贵经验| SKILL
+  </div>
+  <p>读图要点：① 大模型不直接连接世界，它只看得到白板；② Skill 平时躺在磁盘上，不占白板，任务匹配时才"翻开"一页；③ 干活的宝贵经验会回流沉淀成新 Skill。</p>
+
+  <h2>三、重点一：上下文如何影响 Agent 的工作</h2>
+  <p>Anthropic 对 Agent 的定义是"在循环中根据环境反馈使用工具的大语言模型"。这个循环的每一步，模型能依据的<b>只有白板上写了什么</b>：</p>
+  <div class="mermaid">
+flowchart LR
+    A[读白板] --> B[想：下一步干嘛]
+    B --> C[动手：调用工具]
+    C --> D[结果写回白板]
+    D --> A
+    D -.->|任务完成| E[✅ 结束]
+  </div>
+  <table>
+    <tr><th>白板（上下文）的状态</th><th>对 Agent 工作的影响</th></tr>
+    <tr><td>目标清楚、有重点</td><td>决策方向准，一次到位</td></tr>
+    <tr><td>关键信息塞在<b>中间</b></td><td>容易被忽略（IBM 引用的研究：开头结尾记得牢，中间最易漏）</td></tr>
+    <tr><td>塞满旧对话、垃圾输出</td><td>注意力预算被摊薄，<b>context rot</b>——越满越记不准</td></tr>
+    <tr><td>缺少必要资料</td><td>只能瞎猜 → 幻觉</td></tr>
+    <tr><td>有精炼的指令和手册</td><td>行为稳定、符合规范</td></tr>
+  </table>
+  <div class="quote">同一句"帮我订会议室"：白板上有课表查询结果，Agent 直接订好汇报；白板上没有，它只能让你自己看看教室。<b>差别不在脑子，在白板。</b></div>
+
+  <h2>四、重点二：Skill 如何沉淀可复用的任务知识</h2>
+  <p>Agent 干活产生的"经验"，如果不记下来，下次对话开始就归零。Skill 把这些经验<b>写进文件、存进口袋</b>：</p>
+  <div class="mermaid">
+flowchart LR
+    A[🧑‍💻 Agent 干活] --> B[发现好做法/踩了坑]
+    B --> C{要不要沉淀?}
+    C -->|一次性任务| D[不沉淀，经验消失]
+    C -->|会重复做的事| E[✍️ 写成 SKILL.md]
+    E --> F[📁 存入技能文件夹<br>不占白板]
+    F -->|下次遇到同类任务| G[🔍 按描述匹配]
+    G --> H[📖 翻开手册，加载进白板]
+    H --> I[✅ 稳定复现：不走样、不遗漏]
+    I --> A
+  </div>
+  <p><b>沉淀的含义</b>：把一次性的、留在聊天记录里的隐式经验，变成版本化的、可分享的显式知识——写一次，人人可用，次次可用。</p>
+  <table>
+    <tr><th>Skill 的三层</th><th>占白板多少</th><th>作用</th></tr>
+    <tr><td>第 1 层：name + description（封面）</td><td>极小（每技能约 100 token）</td><td>知道口袋里有哪些手册、各管什么</td></tr>
+    <tr><td>第 2 层：SKILL.md 正文（做法）</td><td>任务匹配时才加载</td><td>照着做，结果稳定</td></tr>
+    <tr><td>第 3 层：脚本 / 参考资料 / 模板</td><td>确有需要才读</td><td>细节按需取用</td></tr>
+  </table>
+  <div class="quote">装几十本手册，平时只有"封面目录"上白板——既知道有什么可用，又不挤占干活空间。这就是"沉淀"与"预算"的完美配合。</div>
+
+  <h2>五、三者协作的完整闭环</h2>
+  <div class="mermaid">
+sequenceDiagram
+    participant U as 用户
+    participant A as Agent
+    participant C as 上下文（白板）
+    participant S as Skill 库（口袋）
+    U->>A: 目标："整理读书会纪要"
+    A->>C: 目标上板 + 查口袋封面
+    A->>S: 发现"整理笔记"手册匹配
+    S-->>C: 只翻出这一页（省预算）
+    loop 循环：干一步→看反馈→再干
+        A->>C: 读白板决定下一步
+        A->>A: 调用工具执行
+        A->>C: 结果写回白板
+    end
+    A->>U: ✅ 交付结果
+    A->>S: 新经验写成手册页，沉淀入库
+  </div>
+
+  <h2>六、总结</h2>
+  <div class="final">Agent 用大模型当脑子，凭上下文这块白板做每一个决定；<br>Skill 把干过的好做法写成手册存进口袋，需要时再翻开一页放回白板。<br>白板决定它干得多准，手册决定它干得多稳。</div>
+
+  <p class="meta">参考资料：<a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic · Building Effective Agents</a> · <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic · Effective Context Engineering for AI Agents</a> · <a href="https://www.ibm.com/think/topics/context-window">IBM · What is a context window?</a> · <a href="https://agentskills.io/specification">Agent Skills 开放规范</a>　|　步文萱（Sissi547）· 大数据与人工智能课程</p>
+</div>
+<script>mermaid.initialize({startOnLoad:true,theme:'neutral'});</script>
+</body>
+</html>

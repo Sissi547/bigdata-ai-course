@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大模型上下文入门 · 课件</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --purple50:#EEEDFE; --purple600:#534AB7; --purple800:#3C3489;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --blue50:#E6F1FB; --blue600:#185FA5;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.7}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--purple600);font-weight:600;margin-bottom:12px}
+h1{font-size:36px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:26px;font-weight:700;margin-bottom:18px}
+.lead{font-size:17px;color:var(--muted);max-width:620px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:22px 24px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:28px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.speech{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.speech .who{width:44px;height:44px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+.speech .bub{flex:1;background:var(--surface);border-radius:4px 14px 14px 14px;padding:12px 16px;font-size:15px}
+.big-idea{background:var(--purple50);border-radius:var(--r);padding:22px 26px;font-size:19px;font-weight:600;color:var(--purple800);text-align:center}
+.quote{border-left:3px solid var(--purple600);padding:6px 0 6px 16px;color:var(--muted);margin:16px 0;font-size:15px}
+.code{font-family:ui-monospace,Consolas,monospace;font-size:14px;background:var(--surface);border-radius:8px;padding:2px 8px}
+.tree{font-family:ui-monospace,Consolas,monospace;font-size:15px;background:var(--surface);border-radius:10px;padding:16px 22px;line-height:1.9}
+.badge{font-size:13px;font-weight:700;padding:3px 12px;border-radius:999px;display:inline-block;margin-bottom:8px}
+.layer{display:flex;gap:14px;align-items:stretch;margin-bottom:12px}
+.layer-bar{width:10px;border-radius:6px;flex:none}
+.layer-card{flex:1;background:var(--surface);border-radius:10px;padding:12px 16px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--purple600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--purple600);color:var(--purple600)}
+.btn.primary{background:var(--purple800);color:#fff;border-color:var(--purple800)}
+.btn.primary:hover{background:var(--purple600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--purple600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--purple800);margin:8px 0}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">AI 通识 · 第四讲 · 简单版</div>
+  <h1>大模型的"上下文"入门</h1>
+  <p class="lead">小智怎么突然忘了读书会是周五？这一讲用一块白板，讲清楚 AI 的"记性"是怎么回事。</p>
+  <div style="margin-top:24px">
+    <span class="chip" style="background:var(--purple50);color:var(--purple800)">一个尴尬场景</span>
+    <span class="chip" style="background:var(--teal50);color:var(--teal800)">一块白板</span>
+    <span class="chip" style="background:var(--amber50);color:var(--amber600)">两个坑</span>
+    <span class="chip" style="background:var(--blue50);color:var(--blue600)">三大招 + 5 道小题</span>
+  </div>
+  <p class="meta">内容依据 Anthropic《Effective Context Engineering》与 IBM《What is a context window?》· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">尴尬场景</div>
+  <h2>"读书会是哪天来着？"</h2>
+  <div class="speech" style="margin-top:10px">
+    <div class="who" style="background:var(--blue50);color:var(--blue600)">我</div>
+    <div class="bub">（下午先说了读书会定在周五，又聊了书目、教室、零食……聊到第 100 条）所以读书会是哪天来着？</div>
+  </div>
+  <div class="speech">
+    <div class="who" style="background:var(--purple50);color:var(--purple800)">智</div>
+    <div class="bub">您还没告诉我日期呢。</div>
+  </div>
+  <div class="quote">它不是装傻——是<b style="color:var(--ink)">那句话已经"掉出它的视野"了</b>。要理解这件事，得先认识一个词：上下文。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心概念</div>
+  <h2>上下文 = AI 此刻"看得见"的一切</h2>
+  <p class="lead">IBM 的定义很直白：上下文窗口就是模型一次能"记住"的内容总量，相当于它的<b>工作记忆</b>。想象小智面前有一块白板：</p>
+  <div class="tree" style="margin-top:12px">
+白板上现在有：
+① 任务说明书  <span style="color:var(--faint)">← 隐藏的"系统提示"（比如：你是小智，语气友好）</span>
+② 你我说过的所有对话
+③ 刚刚查到的资料、工具返回的结果
+④ 你上传的文件内容
+  </div>
+  <div class="big-idea" style="margin-top:16px;font-size:17px">回答问题时，它只看白板。没写在白板上的，对它来说就不存在。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">白板多大</div>
+  <h2>容量按"积木块"（token）计数</h2>
+  <p class="lead">AI 读文字前会先把文字切成小块，每块叫一个 <b>token（词元）</b>——像一个词、半个词或一个字，是 AI 的"积木块"。</p>
+  <div class="grid3" style="margin-top:14px">
+    <div class="card" style="text-align:center"><h3>≈ 十几页文档</h3><p style="font-size:14px;color:var(--muted)">8,000 token</p></div>
+    <div class="card" style="text-align:center"><h3>≈ 一本两百页的书</h3><p style="font-size:14px;color:var(--muted)">128,000 token</p></div>
+    <div class="card" style="text-align:center"><h3>≈ 一整套长篇小说</h3><p style="font-size:14px;color:var(--muted)">2,000,000 token</p></div>
+  </div>
+  <div class="quote">换算参考（IBM）：英文约 1.5 个 token 一个单词；中文一个字约 1~2 个 token。2022 年 ChatGPT 刚上线只有约 4 千 token，现在主流模型 12.8 万起步——进步飞快。</div>
+  <p class="meta">注意：白板上不只有你打的字——说明书、查询结果、文件，甚至换行符都在占地方。</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">两个坑</div>
+  <h2>白板越大越好吗？不是</h2>
+  <div class="layer">
+    <div class="layer-bar" style="background:var(--amber600)"></div>
+    <div class="layer-card">
+      <span class="badge" style="background:var(--amber50);color:var(--amber600)">坑一：越大越贵、越慢</span>
+      <p style="font-size:15px;color:var(--muted)">IBM 算过账：输入翻一倍，需要的算力<b style="color:var(--ink)">翻四倍</b>。而且 AI 每写一个字都要"看一遍白板全部"，白板越满回答越慢。</p>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-bar" style="background:var(--red600)"></div>
+    <div class="layer-card">
+      <span class="badge" style="background:var(--red50);color:var(--red600)">坑二：太满了反而"看不准"</span>
+      <p style="font-size:15px;color:var(--muted)">Anthropic 称之为 <b style="color:var(--ink)">context rot（上下文"腐烂"）</b>：白板越满，准确想起其中某条信息的能力越差。研究还发现：<b style="color:var(--ink)">开头和结尾记得牢，塞在中间的最容易被忽略</b>——像人看超长的会议记录。</p>
+    </div>
+  </div>
+  <div class="big-idea" style="margin-top:16px;font-size:16px">上下文是"注意力预算"：每多塞一条，预算就少一分</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">长活儿怎么办</div>
+  <h2>Anthropic 的三大招</h2>
+  <div class="layer" style="margin-top:12px">
+    <div class="layer-bar" style="background:var(--teal600)"></div>
+    <div class="layer-card">
+      <span class="badge" style="background:var(--teal50);color:var(--teal800)">第一招：压缩</span>
+      <p style="font-size:15px;color:var(--muted)">白板快满了，把内容<b style="color:var(--ink)">总结成几行要点</b>，换块新白板只写要点接着干。——像散会前记一页会议纪要。</p>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-bar" style="background:var(--purple600)"></div>
+    <div class="layer-card">
+      <span class="badge" style="background:var(--purple50);color:var(--purple800)">第二招：记笔记</span>
+      <p style="font-size:15px;color:var(--muted)">把重要的事写到白板<b style="color:var(--ink)">外面的本子上</b>，要用时再抄回来。——像便利贴。Anthropic 让 AI 玩宝可梦，它靠自发记笔记，白板被清空后还能接着打几小时比赛。</p>
+    </div>
+  </div>
+  <div class="layer">
+    <div class="layer-bar" style="background:var(--blue600)"></div>
+    <div class="layer-card">
+      <span class="badge" style="background:var(--blue50);color:var(--blue600)">第三招：派小弟</span>
+      <p style="font-size:15px;color:var(--muted)">让几个"分身"各自去翻资料，<b style="color:var(--ink)">只把结论带回来</b>，翻垃圾的过程不占主白板。——像老板只要一页汇报，不要整个图书馆。</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">串一串</div>
+  <h2>原来前几课一直在"省白板"</h2>
+  <div class="card" style="margin-top:8px;background:var(--surface);border-color:transparent">
+    <p style="font-size:16px;line-height:2.1">
+      📔 <b>Skill 分三层按需加载</b> —— 就是为了不把整本手册塞上白板<br>
+      📏 <b>Skill 正文别超 500 行</b> —— 卡太长会占掉太多注意力预算<br>
+      🧑‍💻 <b>Agent 干长活不出错</b> —— 靠"记笔记"把进度存到白板外面
+    </p>
+  </div>
+  <div class="big-idea" style="margin-top:16px;font-size:16px">模型是脑子，Agent 是能干活的人，Skill 是口袋手册<br>上下文是桌上的白板 —— 所有聪明表现，都来自白板上写了什么</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">马上能用</div>
+  <h2>新手的 4 个技巧</h2>
+  <div class="card" style="margin-top:8px">
+    <p style="font-size:16px;line-height:2.2">
+      <b>1.</b> 重要的话放在<b>开头或结尾</b>说（中间最容易被忽略）<br>
+      <b>2.</b> 聊了很久，先让 AI <b>总结一下目前的要点</b>再继续<br>
+      <b>3.</b> 新任务<b>开新对话</b>，别让旧杂物占白板<br>
+      <b>4.</b> 长任务让 AI <b>写笔记</b>："把刚才确定的事项记成清单"
+    </p>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 5 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次只出一道题，选完马上告诉你对错和原因，答完出总分。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">5 道题</div>
+    <p style="color:var(--muted);font-size:14px">都是本讲讲过的 · 放心答</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">测验完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 5</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>一句话带走：</b><span style="color:var(--teal800)">上下文是 AI 此刻看得见的白板，容量有限还是"注意力预算"。重要信息放两头，长活儿靠压缩、记笔记、派小弟。</span></p>
+  </div>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{
+  const d=document.createElement('button');
+  d.onclick=()=>go(i);
+  dotsBox.appendChild(d);
+});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'"上下文"用大白话讲是什么？',
+  opts:['AI 的出厂说明书','AI 此刻回答问题时"看得见"的全部内容','AI 的显卡型号','互联网上的所有网页'],
+  a:1,
+  ex:'上下文就是 AI 面前的"白板"：说明书、对话、查到的资料、文件……没写在白板上的，对它来说就不存在。'},
+ {q:'token 是什么？',
+  opts:['AI 的电量单位','AI 读文字前把文字切成的"积木块"，白板容量按它计数','一种加密货币','AI 的名字'],
+  a:1,
+  ex:'AI 先把文字切成小块（token）再处理，上下文窗口的大小就是按 token 计数的。英文约 1.5 token 一个单词，中文一个字约 1~2 个。'},
+ {q:'为什么说白板"太满"反而不好？',
+  opts:['会爆炸','内容越多，模型准确想起某条信息的能力越差（context rot），且中间的内容最容易被忽略','会自动删除用户的账号','没有任何坏处'],
+  a:1,
+  ex:'Anthropic 称之为 context rot；研究还发现开头和结尾的信息记得最牢，塞中间的最容易被忽略。上下文是"注意力预算"。'},
+ {q:'下面哪一项不属于 Anthropic 应对长任务的三大招？',
+  opts:['压缩：把旧内容总结成要点接着干','记笔记：把重要的事写到白板外面，要用再拿回来','派小弟：分身去翻资料，只带结论回来','把白板无限加大，什么都塞进去'],
+  a:3,
+  ex:'三大招是压缩、记笔记、派小弟。盲目加大白板解决不了问题：越贵越慢，而且太满反而看不准。'},
+ {q:'跟 AI 对话时，下面哪个做法符合本讲建议？',
+  opts:['把最重要的要求藏在一段超长文字的正中间','重要的话放开头或结尾；聊很久先让它总结要点；新任务开新对话','永远不换新对话，一口气聊一年','什么都别说，让 AI 猜'],
+  a:1,
+  ex:'开头结尾记得最牢；久聊先总结是手动版"压缩"；新任务开新对话避免旧杂物占白板；长任务让它写笔记。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){
+  qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));
+  renderQ();
+}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===5?'满分！白板理论你已毕业。':
+      score>=3?'不错！错的那几页再翻翻看。':
+      '没关系，再翻一遍课件——白板道理很简单。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>
