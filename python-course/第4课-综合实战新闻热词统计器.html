@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 第 4 课 · 综合实战：新闻热词统计器</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --purple50:#EEEDFE; --purple600:#534AB7;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.7}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:36px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:26px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:620px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:22px 26px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:var(--purple600);font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.road{display:flex;flex-direction:column}
+.road-step{display:flex;gap:14px}
+.road-num{width:30px;height:30px;border-radius:50%;background:var(--blue50);color:var(--blue800);font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+.road-body{padding:0 0 18px 16px;border-left:1.5px dashed var(--line2);margin:-6px 0 0 -15px;padding-top:6px}
+.road-step:last-child .road-body{border-left-color:transparent;padding-bottom:0}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">Python 四课系列 · 第 4 课 / 共 4 课 · 毕业课</div>
+  <h1>综合实战：<br>新闻热词统计器</h1>
+  <p class="lead">前三课的所有零件，今天组装成一台真正的机器：读入一篇文章，统计每个词出现几次。这就是数据新闻的第一块砖。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>导入：数据新闻 = 程序 + 好奇心</div>
+    <div class="t">5-15 min</div><div>新零件：读文件、拆词语、报错救援</div>
+    <div class="t">15-30 min</div><div>组装：完整的热词统计器</div>
+    <div class="t">30-38 min</div><div>测验：4 道小题</div>
+    <div class="t">38-45 min</div><div>总结 + 后续学习路线</div>
+  </div>
+  <p class="meta">内容依据 Python 官方中文教程第 5、7、8 章 · 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">导入 · 5 分钟</div>
+  <h2>数据新闻，从"数词"开始</h2>
+  <p class="lead">记者的手工会读稿，程序的眼睛会<b>数词</b>。把一个月的本地新闻丢给程序，数出"暴雨""热线""涨价"各出现多少次——哪个词越来越热，选题就在那里。</p>
+  <div class="grid3" style="margin-top:14px">
+    <div class="card"><b>要读的原料</b><p style="font-size:14px;color:var(--muted)">一篇存成 .txt 的新闻稿</p></div>
+    <div class="card"><b>要用的零件</b><p style="font-size:14px;color:var(--muted)">for 循环 + if 判断 + 字典计数</p></div>
+    <div class="card"><b>要出的成品</b><p style="font-size:14px;color:var(--muted)">每个词出现的次数排行榜</p></div>
+  </div>
+  <div class="quote">今天的新零件只有三个：读文件、拆词语、看懂报错。其余全是学过的。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">新零件一 · 5 分钟</div>
+  <h2>open()：把 .txt 文件读进来</h2>
+  <div class="codeblock"><span class="kw">with</span> <span class="kw">open</span>(<span class="str">"news.txt"</span>, <span class="str">"r"</span>, encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    text = f.read()          <span class="cm"># 把整个文件内容读成一个字符串</span>
+<span class="kw">print</span>(<span class="kw">len</span>(text))             <span class="cm"># 看看读了多少个字</span></div>
+  <div class="quote">读作："打开 news.txt 当作 f，用完自动关门"。三个参数记住：文件名；<b style="color:var(--ink)">"r"</b> 表示读（read）；<b style="color:var(--ink)">encoding="utf-8"</b> 保证中文不乱码（写中文内容必加，官方文档推荐的通用编码）。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">新零件二 · 5 分钟</div>
+  <h2>split()：把一句话拆成一串词</h2>
+  <div class="codeblock">title = <span class="str">"热线 开通 首日 来电 200 通"</span>
+words = title.split()          <span class="cm"># 按空格切分，得到一个列表</span>
+<span class="kw">print</span>(words)
+<span class="out">['热线', '开通', '首日', '来电', '200', '通']</span></div>
+  <div class="quote">split() 括号里不写东西时，默认按<b style="color:var(--ink)">空格</b>切。它把"一篇文章"变成"词语列表"——列表是第 3 课的老朋友，for 循环马上就能派上用场。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">新零件三 · 5 分钟</div>
+  <h2>报错不可怕：学会读"案发通知"</h2>
+  <div class="codeblock"><span class="kw">print</span>(news_title)
+<span class="out">Traceback (most recent call last):</span>
+<span class="out">NameError: name 'news_title' is not defined</span></div>
+  <div class="grid3" style="margin-top:8px">
+    <div class="card"><b>Traceback</b><p style="font-size:13px;color:var(--muted)">"案发经过回放"：从下往上读</p></div>
+    <div class="card"><b>错误类型</b><p style="font-size:13px;color:var(--muted)">NameError=名字不存在；TypeError=类型用错；SyntaxError=拼写/标点错</p></div>
+    <div class="card"><b>最后一行</b><p style="font-size:13px;color:var(--muted)">= 结案陈词，直接说哪里错</p></div>
+  </div>
+  <div class="quote">官方教程专门有一章《错误与异常》——<b style="color:var(--ink)">报错不是"你不行"，是 Python 在给你发采访线索</b>：顺着最后一行去案发现场看看。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">组装 · 15 分钟</div>
+  <h2>完整作品：新闻热词统计器（30 行）</h2>
+  <div class="codeblock"><span class="cm"># news.txt 里是若干行新闻标题（词之间用空格隔开）</span>
+counts = {}                              <span class="cm"># 空字典：词 → 次数</span>
+
+<span class="kw">with</span> <span class="kw">open</span>(<span class="str">"news.txt"</span>, <span class="str">"r"</span>, encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> line <span class="kw">in</span> f:                       <span class="cm"># 逐行读文件</span>
+        words = line.split()             <span class="cm"># 拆成本行词语列表</span>
+        <span class="kw">for</span> w <span class="kw">in</span> words:                  <span class="cm"># 逐个词检查</span>
+            <span class="kw">if</span> w <span class="kw">in</span> counts:              <span class="cm"># 字典里有这个标签吗？</span>
+                counts[w] = counts[w] + <span class="kw">1</span>   <span class="cm"># 有 → 次数加一</span>
+            <span class="kw">else</span>:                        <span class="cm"># 没有 → 新词条，从 1 起</span>
+                counts[w] = <span class="kw">1</span>
+
+<span class="kw">for</span> word, num <span class="kw">in</span> counts.items():         <span class="cm"># 逐个公布结果</span>
+    <span class="kw">if</span> num >= <span class="kw">2</span>:                         <span class="cm"># 只报出现 2 次以上的热词</span>
+        <span class="kw">print</span>(<span class="kw">f</span><span class="str">"{word}：出现 {num} 次"</span>)</div>
+  <div class="quote">每一行你都在前三课见过：with open（今天）、for（第 3 课）、if/else（第 3 课）、字典取标签加一（第 3 课）、f-string（第 2 课）。<b style="color:var(--ink)">程序就是把学过的小零件拼起来</b>。作业：准备自己的 news.txt（10 行标题），跑出你自己的热词榜。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">总结 · 8 分钟</div>
+  <h2>四课知识地图 + 后续路线</h2>
+  <div class="grid2" style="margin-top:6px">
+    <div class="card">
+      <b>你已经会的</b>
+      <p style="font-size:14px;color:var(--muted);line-height:2">print / 变量 / 注释（第 1 课）<br>数字 / 字符串 / f-string / input（第 2 课）<br>列表 / if / for / 字典（第 3 课）<br>open 读文件 / split / 读报错（第 4 课）</p>
+    </div>
+    <div class="card">
+      <b>下一步路线（官方教程章节）</b>
+      <div class="road" style="margin-top:8px">
+        <div class="road-step"><div class="road-num">1</div><div class="road-body" style="padding-bottom:8px"><b style="font-size:14px">函数 def</b>：把重复代码打包（教程第 4.7 节）</div></div>
+        <div class="road-step"><div class="road-num">2</div><div class="road-body" style="padding-bottom:8px"><b style="font-size:14px">模块</b>：一行引入现成能力，如统计模块（教程第 6 章）</div></div>
+        <div class="road-step"><div class="road-num">3</div><div class="road-body"><b style="font-size:14px">CSV / 表格处理</b>：通向完整的数据新闻工作流</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="big-idea" style="font-size:16px;margin-top:16px">四课毕业标准：不看课件，能独立写出第 4 课的热词统计器</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>毕业测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 6 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">四课完结</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>毕业寄语：</b><span style="color:var(--teal800)">你已经具备数据新闻的第一块砖：读文件、拆文字、数次数。程序不是魔法，是把"人怎么做"翻译成"电脑怎么做"。保持好奇心，官方教程永远在那里。</span></p>
+  </div>
+  <p class="meta">官方出处：Python 官方教程第 5 章（数据结构）、第 7 章（输入与输出）、第 8 章（错误与异常）docs.python.org/zh-cn/3/tutorial/</p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'open("news.txt", "r", encoding="utf-8") 里的 "r" 表示？',
+  opts:['read，读文件','return，返回','random，随机','record，录音'],
+  a:0,
+  ex:'"r" = read 读模式；对应的 "w" 是 write 写模式（会覆盖原文件）。encoding="utf-8" 保证中文不乱码。'},
+ {q:'"热线 开通 来电".split() 的结果是什么？',
+  opts:['一个字符串','一个包含三个词的列表','报错','数字 3'],
+  a:1,
+  ex:'split() 按空格切分字符串，返回列表：[\'热线\', \'开通\', \'来电\']。列表可以用 for 逐个处理。'},
+ {q:'程序报错 NameError: name \'news_title\' is not defined，最可能的原因是？',
+  opts:['电脑坏了','使用了变量前忘了先赋值，或变量名拼写错误','网断了','文件太大'],
+  a:1,
+  ex:'NameError = 这个名字不存在：要么没赋值就用了，要么名字拼错。读报错最后一行 = 读结案陈词。'},
+ {q:'热词统计器里，counts[w] = counts[w] + 1 这行的意思是？',
+  opts:['把 w 删除','把 w 改名','w 这个词的计数加一','给程序加速'],
+  a:2,
+  ex:'读作"取出 w 现在的次数，加一，再放回去"。配合 if/else 实现"见过就+1，没见过就从 1 开始"。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分毕业！四课全通。':score>=2?'不错！错题页再翻翻。':'别急，把第 4 课的代码逐行读一遍再测。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

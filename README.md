@@ -1,9 +1,31 @@
 # 大数据与人工智能 · 学习仓库
 
 > 作者：步文萱（GitHub: [Sissi547](https://github.com/Sissi547)）
-> 本仓库是《大数据与人工智能》课程的个人学习仓库，收录四个主题的交互式课件与一份概念关系总结。
+> 本仓库是《大数据与人工智能》课程的个人学习仓库，收录 AI 通识课件、Python 四节基础课件、以及"语法到 AI 应用"的完整学习地图与八份概念学习资料。
 
-## 课件目录（learning-materials/）
+## Python 学习路线（python-course/）
+
+**总入口：[学习地图](python-course/学习地图.html)** —— 4 次课 × 90 分钟（每次课上下各 45 分钟：上半场补语法、下半场做 AI 应用）。
+
+| 课次 | 上半场（45 min · 语法） | 下半场（45 min · AI 应用） |
+|------|------------------------|---------------------------|
+| 第 1 次 | 函数与模块 | AI 是什么：机器学习入门 |
+| 第 2 次 | 正则表达式与 CSV | 文字变数字：词袋模型 |
+| 第 3 次 | 类与对象 + 异常处理 | 情感分析实战 |
+| 第 4 次 | 推导式、排序与计数 | 文本分类 + 结业项目 |
+
+**概念学习资料目录：[学习资料/index.html](python-course/学习资料/index.html)**（含概念关联图）
+
+| # | 概念 | 类型 | # | 概念 | 类型 |
+|---|------|------|---|------|------|
+| 01 | [函数与模块](python-course/学习资料/01-函数与模块.html) | 语法 | 05 | [类与对象 + 异常处理](python-course/学习资料/05-类与异常处理.html) | 语法 |
+| 02 | [AI 是什么](python-course/学习资料/02-AI是什么.html) | AI | 06 | [情感分析](python-course/学习资料/06-情感分析.html) | AI |
+| 03 | [正则表达式与 CSV](python-course/学习资料/03-正则表达式与CSV.html) | 语法 | 07 | [推导式、排序与计数](python-course/学习资料/07-语法收尾.html) | 语法 |
+| 04 | [词袋模型](python-course/学习资料/04-词袋模型.html) | AI | 08 | [文本分类 + 结业](python-course/学习资料/08-文本分类.html) | AI |
+
+**基础四课（Python 入门）**：[第 1 课 初识 Python](python-course/第1课-初识Python.html) · [第 2 课 数据类型与字符串](python-course/第2课-数据类型与字符串.html) · [第 3 课 列表判断与循环](python-course/第3课-列表判断与循环.html) · [第 4 课 综合实战](python-course/第4课-综合实战新闻热词统计器.html)
+
+## AI 通识课件（learning-materials/）
 
 | 课件 | 主题 | 内容 |
 |------|------|------|
@@ -25,6 +47,9 @@
 - Anthropic 工程博客：《Building Effective Agents》《Effective Context Engineering for AI Agents》
 - IBM：《What is a context window?》《AI Agents》
 - Agent Skills 开放规范：agentskills.io
+- Python 官方中文教程：docs.python.org/zh-cn/3/tutorial/
+- scikit-learn 官方文档：scikit-learn.org（机器学习、文本特征提取、朴素贝叶斯）
+- SnowNLP 开源项目：github.com/isnowfy/snownlp
 
 ## 仓库结构
 
@@ -39,6 +64,15 @@
 │   ├── llm-context.html
 │   ├── skill.html
 │   └── concept-relationship.html
+├── python-course/
+│   ├── 学习地图.html
+│   ├── 第1课-初识Python.html
+│   ├── 第2课-数据类型与字符串.html
+│   ├── 第3课-列表判断与循环.html
+│   ├── 第4课-综合实战新闻热词统计器.html
+│   └── 学习资料/
+│       ├── index.html
+│       └── 01-…08-….html（八份概念学习资料）
 ├── README.md
 └── .gitignore
 ```

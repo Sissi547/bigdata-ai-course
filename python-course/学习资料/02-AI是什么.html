@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料 02 · AI 是什么</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:34px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:25px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:640px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:20px 24px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14.5px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:#534AB7;font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+a{color:var(--blue600)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">学习资料 02 · 第 1 次课 下半场 · 概念：AI 是什么（机器学习入门）</div>
+  <h1>AI 是什么：<br>规则是人写死的，规律是数据里学出来的</h1>
+  <p class="lead">上半场你学会了"把流程装进按钮"。这一场我们让按钮里装的不是你想好的规则，而是机器自己从数据里总结出来的规律。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>为什么学：1000 条标题，规则写不完</div>
+    <div class="t">5-20 min</div><div>讲解：写死规则 vs 从数据学；模型、训练、预测</div>
+    <div class="t">20-38 min</div><div>跟练：让现成模型给 5 条标题打分</div>
+    <div class="t">38-45 min</div><div>测验：4 道小题 + 小结</div>
+  </div>
+  <p class="meta">依据 scikit-learn 官方用户指南「机器学习的基本概念」· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">为什么学 · 5 分钟</div>
+  <h2>先看一个"写不完"的规则</h2>
+  <p class="lead">主编让你给 1000 条标题判断"正面 / 负面"，你第一反应是写规则：</p>
+  <div class="codeblock"><span class="cm"># 用 if 把规则一条条写死</span>
+<span class="kw">def</span> is_positive(title):
+    <span class="kw">if</span> <span class="str">"喜"</span> <span class="kw">in</span> title <span class="kw">or</span> <span class="str">"成功"</span> <span class="kw">in</span> title:
+        <span class="kw">return</span> <span class="str">"正面"</span>
+    <span class="kw">elif</span> <span class="str">"事故"</span> <span class="kw">in</span> title <span class="kw">or</span> <span class="str">"下跌"</span> <span class="kw">in</span> title:
+        <span class="kw">return</span> <span class="str">"负面"</span>
+    <span class="kw">return</span> <span class="str">"说不准"</span></div>
+  <div class="quote">遇上"暴雨后市民自发清淤"：有"暴雨"，规则判负面，可这明明是好新闻。<b style="color:var(--ink)">例外永远写不完</b>——这就是需要机器学习的时刻。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">生活类比 · 3 分钟</div>
+  <h2>两种"审稿标准"的来源</h2>
+  <div class="grid2">
+    <div class="card"><b>规则法：像照着一本手册打分</b><p style="font-size:15px;color:var(--muted)">新编辑先背《审稿手册》，手册上第几条怎么写就怎么判。手册没写到的稿子，他当场卡住。</p></div>
+    <div class="card"><b>机器学习：像看了一千篇稿的老师傅</b><p style="font-size:15px;color:var(--muted)">没人给他手册，只给他 1000 篇已经标好"正面/负面"的稿子。看多了，他自己总结出一套眼力。</p></div>
+  </div>
+  <div class="big-idea">标准不是人写的，是从数据里"看"出来的</div>
+  <p class="lead">妙处在这儿：老师傅说得清结论，却说不清自己脑子里第几条规则。<b>他"学到"的东西存在哪儿？存在"模型"里。</b></p>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心一 · 5 分钟</div>
+  <h2>"写死规则"和"从数据学"差在哪</h2>
+  <div class="term"><div class="name">写死规则</div><div class="desc">人先想清楚"看到什么词就判什么"，再翻译成 if。电脑只负责执行。<b>特征是<span class="kw">人</span>挑的，规则是<span class="kw">人</span>定的</b>。</div></div>
+  <div class="term"><div class="name">机器学习</div><div class="desc">人只准备两样东西：一批"标题"和一栏"正确答案"。规律由模型从这批数据里自己找出来。官方说法叫<b>从数据中学习并做出预测</b>。</div></div>
+  <div class="codeblock"><span class="cm"># 做法一：规则由人写死</span>
+<span class="kw">if</span> <span class="str">"下跌"</span> <span class="kw">in</span> title:
+    label = <span class="str">"负面"</span>
+
+<span class="cm"># 做法二：规律从数据里学（不写规则，只喂数据）</span>
+<span class="cm"># 给它 1000 对「标题 → 正面/负面」，让它自己总结</span>
+data = [(<span class="str">"校园招聘会提供 3000 个岗位"</span>, <span class="str">"正面"</span>),
+        (<span class="str">"暴雨致道路积水 交通中断"</span>, <span class="str">"负面"</span>)]
+<span class="cm"># 这里的 data，专业名叫"训练数据"</span></div>
+  <div class="quote">上半场的函数是"人把步骤告诉电脑"；机器学习是"人把例子告诉电脑"。<b style="color:var(--ink)">这一步思路的转变，就是整门课的分水岭</b>。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心二 · 6 分钟</div>
+  <h2>三个必会的词：模型、训练、预测</h2>
+  <div class="term"><div class="name">模型</div><div class="desc">大白话：<b>一台"看了很多例子后形成的判断机器"</b>。你喂它一条新标题，它给你一个判断。类比：老师傅脑子里那套说不出口的眼力。</div></div>
+  <div class="term"><div class="name">训练</div><div class="desc">大白话：<b>让模型看例子、自己调自己的过程</b>。给它"标题 + 正确答案"，它猜一次、对一次答案、改一次自己，重复很多轮。注意：规则依然是人写的，但<b>规律是它自己找的</b>。</div></div>
+  <div class="term"><div class="name">预测</div><div class="desc">大白话：<b>拿训好的模型去判断没见过的新数据</b>。这一步你不用再给答案——给了就不用预测了。</div></div>
+  <div class="codeblock"><span class="cm"># scikit-learn 里所有模型都是同一个"作息"（骨架示意）</span>
+model.fit(标题列表, 正确答案列表)      <span class="cm"># 训练：从数据里学</span>
+model.predict([<span class="str">"新标题"</span>])             <span class="cm"># 预测：给新标题打标签</span>
+<span class="cm"># 具体用哪个模型类，第 08 份资料里细讲</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心三 · 7 分钟</div>
+  <h2>第一个实操：让"现成模型"给标题打分</h2>
+  <p class="lead">好消息是：很多时候你不用自己训。别人训好的模型可以直接借来用，这叫<b>预训练模型</b>。</p>
+  <div class="codeblock"><span class="cm"># 环境准备，只做一次。国内已配清华源，直接装即可：</span>
+<span class="cm"># pip install snownlp</span>
+
+<span class="kw">from</span> snownlp <span class="kw">import</span> SnowNLP
+
+titles = [<span class="str">"学校食堂推出夜宵窗口 学生排队点赞"</span>,
+          <span class="str">"暴雨致城区多条道路积水 交通一度中断"</span>]
+
+<span class="kw">for</span> t <span class="kw">in</span> titles:
+    score = SnowNLP(t).sentiments       <span class="cm"># 0~1 的"正面概率"</span>
+    <span class="kw">print</span>(round(score, <span class="kw">2</span>), t)
+<span class="out">0.96 学校食堂推出夜宵窗口 学生排队点赞</span>
+<span class="out">0.11 暴雨致城区多条道路积水 交通一度中断</span></div>
+  <div class="quote">分数不是"打了几颗星"。SnowNLP 官方说明：<b style="color:var(--ink)">sentiments 返回的是这条文本属于正面的概率</b>，越接近 1 越正面，越接近 0 越负面。（上面两条分数以你电脑上的实际输出为准。）</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 18 分钟</div>
+  <h2>动手：给 5 条标题排个"情绪榜"</h2>
+  <p class="lead"><b style="color:var(--ink)">敲一遍，别复制</b>——打字的过程就是在记语法。新建 <code>ai01.py</code>，把下面这段敲进去跑：</p>
+  <div class="codeblock"><span class="kw">from</span> snownlp <span class="kw">import</span> SnowNLP
+
+titles = [
+    <span class="str">"学校食堂推出夜宵窗口 学生排队点赞"</span>,
+    <span class="str">"暴雨致城区多条道路积水 交通一度中断"</span>,
+    <span class="str">"校园招聘会提供 3000 个岗位"</span>,
+    <span class="str">"图书馆延长开放时间 考研学生叫好"</span>,
+    <span class="str">"实验楼施工噪音扰民 学生投诉无果"</span>,
+]
+
+results = []                            <span class="cm"># 空列表，准备装结果</span>
+<span class="kw">for</span> t <span class="kw">in</span> titles:
+    score = SnowNLP(t).sentiments       <span class="cm"># 0~1 的正面概率</span>
+    results.append((round(score, <span class="kw">2</span>), t))
+
+<span class="kw">for</span> score, t <span class="kw">in</span> sorted(results, reverse=<span class="kw">True</span>):
+    <span class="kw">print</span>(score, t)</div>
+  <div class="grid2" style="margin-top:8px">
+    <div class="card"><b>练习 A</b><p style="font-size:14px;color:var(--muted)">打印时多说一句话：分数大于 0.6 加印"偏正面"，小于 0.4 加印"偏负面"，中间加印"模型也拿不准"。提示：用 if / elif / else。</p></div>
+    <div class="card"><b>练习 B</b><p style="font-size:14px;color:var(--muted)">再用第 4 课的关键词规则法判一次同样的 5 条标题，把两种结果并排打印，数一数有几条不一致。</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">常见坑 · 3 分钟</div>
+  <h2>新手最容易想歪的三个地方</h2>
+  <div class="term"><div class="name">以为一定准</div><div class="desc">SnowNLP 项目自带说明：它的情感模型主要用购物评价训练，用在新闻上效果不保证。"不准"是常态——<b>学会看它错在哪，比抱怨它不准有用</b>。</div></div>
+  <div class="term"><div class="name">把训练想成玄学</div><div class="desc">训练不是程序员偷偷写规则，而是<b>拿大量带正确答案的例子反复喂</b>。所以数据里没有的东西，它学不到；数据偏了，它也跟着偏。</div></div>
+  <div class="term"><div class="name">把 0.5 当零分</div><div class="desc">sentiments 是<b>正面概率</b>，不是百分制分数。0.5 附近表示模型拿不准；判正负通常看的是它离 0.5 有多远，而不是"够不够 60 分"。</div></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本概念完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>一句话带走：</b><span style="color:var(--teal800)">规则法是人把规则写死，机器学习是把例子喂给电脑、由它自己总结规律；这套规律存在模型里，训练是学的过程，预测是用的过程。</span></p>
+  </div>
+  <p class="meta">官方出处：scikit-learn 官方用户指南「机器学习的基本概念」<a href="https://scikit-learn.org/stable/user_guide.html">scikit-learn.org/stable/user_guide.html</a>；SnowNLP 用法见 <a href="https://pypi.org/project/snownlp/">pypi.org/project/snownlp</a> · 下一份资料：03 正则表达式与 CSV · 返回<a href="index.html">目录页</a></p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'传统程序和机器学习，最本质的区别是什么？',
+  opts:['机器学习运行得更快','传统程序的规则由人写死，机器学习从数据里学出规律','传统程序不能处理文字','机器学习不需要电脑'],
+  a:1,
+  ex:'区别在于"规则从哪来"：写死规则是人先想清楚每条标准，机器学习是给一批带正确答案的例子、让模型自己总结。运行速度不是区别——机器学习跑起来往往更慢；能处理文字也不是区别，上半场你写的词频统计就是传统程序在处理文字。'},
+ {q:'在 scikit-learn 的用法里，"训练"和"预测"分别对应哪两个方法？',
+  opts:['fit 和 predict','open 和 close','print 和 input','def 和 return'],
+  a:0,
+  ex:'scikit-learn 的模型统一是两步：先 model.fit(数据, 正确答案) 训练，再 model.predict(新数据) 预测。def / return 是概念 01 的函数语法，跟模型的训练、预测不是一回事；open 是读写文件用的。'},
+ {q:'score = SnowNLP(标题).sentiments 得到 0.9，意味着什么？',
+  opts:['这条标题里有 0.9 个字','模型认为这条标题是正面的概率约为 0.9','分数算错了，应该大于 1','这个字出现了 0.9 次'],
+  a:1,
+  ex:'SnowNLP 官方说明里，sentiments 返回的是"属于正面的概率"，取值在 0~1 之间：越接近 1 越正面，越接近 0 越负面，0.5 附近表示模型也拿不准。它既不是字数，也不是百分制分数，超出 0~1 才是出错了。'},
+ {q:'为什么"看到暴雨就判负面"这种人工规则容易出错？',
+  opts:['因为 Python 不支持中文','因为同一个词在不同语境里意思不同，"暴雨后市民自发清淤"其实是正面','因为 if 语句写不了这种判断','因为规则只能写一条'],
+  a:1,
+  ex:'关键词法只看词、不看语境，例外永远写不完，所以规则会越写越长、还是堵不住漏洞。机器学习让模型从大量标注样本里自己权衡各个词的分量。至于 if，写多少条都可以，问题不在条数，而在"人想不全"。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！可以进入下一个概念了。':score>=2?'不错！错题页再翻翻。':'把跟练代码敲一遍，两个词的区别就想通了。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

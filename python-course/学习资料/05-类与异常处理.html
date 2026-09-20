@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料 05 · 类与对象 + 异常处理</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:34px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:25px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:640px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:20px 24px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14.5px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:#534AB7;font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+a{color:var(--blue600)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">学习资料 05 · 第 3 次课 上半场 · 概念：类与对象 + 异常处理</div>
+  <h1>类与对象 + 异常：<br>看懂别人的代码，保护自己的程序</h1>
+  <p class="lead">这两个知识点有个共同点：它们不是用来"写新功能"的，而是用来"读懂别人的库"和"让程序别崩"的。学会了，你才敢用 AI 库。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>为什么学：AI 库里全是"对象"</div>
+    <div class="t">5-28 min</div><div>讲解：类与对象、方法、异常处理</div>
+    <div class="t">28-40 min</div><div>跟练：给标题打分时不怕出错</div>
+    <div class="t">40-45 min</div><div>测验 4 题 + 小结</div>
+  </div>
+  <p class="meta">依据 Python 官方中文教程 第 9 章（类）与第 8 章（错误与异常）· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">为什么学 · 5 分钟</div>
+  <h2>你很快会遇到这样一行代码</h2>
+  <div class="codeblock"><span class="kw">from</span> snownlp <span class="kw">import</span> SnowNLP
+
+s = SnowNLP(<span class="str">"暴雨导致多条道路积水"</span>)   <span class="cm"># 注意这行的写法</span>
+<span class="kw">print</span>(s.sentiments)</div>
+  <div class="quote">两个陌生写法：<code>SnowNLP("...")</code> 长得像函数但不是；<code>s.sentiments</code> 后面不带括号。这就是<b style="color:var(--ink)">类与对象</b>——不明白它，你只能死记硬背别人的示例代码；明白了，你会知道哪部分能改成自己的内容。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">生活类比 · 4 分钟</div>
+  <h2>类 = 模具，对象 = 压出来的月饼</h2>
+  <div class="grid2">
+    <div class="card"><b>类（class）＝模具</b><p style="font-size:15px;color:var(--muted)">"新闻稿"模具，规定了每篇稿子都该有标题、正文、字数这些属性，也该会"算字数"这个动作。模具本身不是稿子。</p></div>
+    <div class="card"><b>对象（object）＝具体那篇稿子</b><p style="font-size:15px;color:var(--muted)">用模具压出来的一篇具体稿件，比如《暴雨突袭》。它有自己的标题和正文，也能执行"算字数"。</p></div>
+  </div>
+  <div class="big-idea">类定义"应该有什么"，对象是"具体的一个"</div>
+  <p class="lead">所以 <code>SnowNLP("暴雨导致多条道路积水")</code> 是在用模具压出一篇"待分析文本"，<code>s.sentiments</code> 就是读出它的情感分数。</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心一 · 8 分钟</div>
+  <h2>最小的类：属性与方法</h2>
+  <div class="term"><div class="name">属性</div><div class="desc">对象身上带的<b>数据</b>，写作 <code>对象.属性名</code>（不带括号）。例：<code>s.sentiments</code>。</div></div>
+  <div class="term"><div class="name">方法</div><div class="desc">对象身上带的<b>动作/函数</b>，写作 <code>对象.方法名()</code>（<b>带括号</b>）。例：<code>s.keywords(3)</code> 取前三个关键词。</div></div>
+  <div class="codeblock"><span class="kw">class</span> Draft:                      <span class="cm"># 造一个"稿件"模具</span>
+    <span class="kw">def</span> __init__(self, title):     <span class="cm"># 压模具时自动执行，用来装初始数据</span>
+        self.title = title
+    <span class="kw">def</span> word_count(self):          <span class="cm"># 方法：算标题字数</span>
+        <span class="kw">return</span> <span class="kw">len</span>(self.title)
+
+d = Draft(<span class="str">"暴雨突袭三环"</span>)          <span class="cm"># 压出一个具体对象</span>
+<span class="kw">print</span>(d.title)                     <span class="out">暴雨突袭三环</span>
+<span class="kw">print</span>(d.word_count())              <span class="out">6</span></div>
+  <div class="quote">这页不用背。你只需要记住那条铁律：<b style="color:var(--ink)">后面带括号的是动作，不带括号的是资料</b>——凭这个就能读懂绝大多数 AI 库的用法。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心二 · 7 分钟</div>
+  <h2>异常处理：给程序系上安全带</h2>
+  <div class="term"><div class="name">try / except</div><div class="desc">把"可能出事的操作"放进 try；万一真出事，不崩溃，改走 except 里的备用方案。</div></div>
+  <div class="codeblock">texts = [<span class="str">"暴雨导致积水"</span>, <span class="str">"  "</span>, <span class="str">"开学典礼举行"</span>]
+
+<span class="kw">for</span> t <span class="kw">in</span> texts:
+    <span class="kw">try</span>:
+        score = analyze(t)            <span class="cm"># 可能因空白文本而报错</span>
+        <span class="kw">print</span>(<span class="str">f"得分：{score:.2f}"</span>)
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">print</span>(<span class="str">f"跳过一条：{e}"</span>)   <span class="cm"># 记录原因，继续下一条</span></div>
+  <div class="quote">处理真实新闻数据时，脏数据一定存在（空行、乱码、超长文本）。<b style="color:var(--ink)">没有 try，一条脏数据就能让整个批处理停下来</b>；有了它，程序会跳过问题、跑完全程。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 12 分钟</div>
+  <h2>动手：批量打分时不怕出错</h2>
+  <p class="lead">先安装库（国内源已配好，一条命令即可）：</p>
+  <div class="codeblock"><span class="cm"># 在命令行里执行（不是 Python 里）</span>
+pip install snownlp</div>
+  <div class="codeblock"><span class="kw">from</span> snownlp <span class="kw">import</span> SnowNLP
+
+titles = [
+    <span class="str">"暴雨突袭，三环多处积水，市民出行受阻"</span>,
+    <span class="str">"   "</span>,                                  <span class="cm"># 故意混入一条脏数据</span>
+    <span class="str">"校园歌手大赛圆满落幕，观众掌声不断"</span>,
+]
+
+<span class="kw">for</span> t <span class="kw">in</span> titles:
+    <span class="kw">try</span>:
+        s = SnowNLP(t)                    <span class="cm"># 压出对象</span>
+        <span class="kw">print</span>(<span class="str">f"{s.sentiments:.2f}  {t[:12]}"</span>)   <span class="cm"># 读属性，保留两位小数</span>
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">print</span>(<span class="str">f"跳过：{e}"</span>)</div>
+  <div class="grid2" style="margin-top:8px">
+    <div class="card"><b>练习 A</b><p style="font-size:14px;color:var(--muted)">把你自己的 5 条校园新闻标题加进去，看分数是否合理。</p></div>
+    <div class="card"><b>练习 B</b><p style="font-size:14px;color:var(--muted)">试着把 <code>s.sentiments</code> 写成 <code>s.sentiments()</code>，看报错说什么——记住"属性不带括号"。</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">常见坑 · 3 分钟</div>
+  <h2>三个高频翻车点</h2>
+  <div class="term"><div class="name">属性加括号</div><div class="desc"><code>s.sentiments()</code> 会报 TypeError（float 不可调用）。属性是资料，不是动作。</div></div>
+  <div class="term"><div class="name">except 写太宽</div><div class="desc"><code>except:</code> 裸写会把所有错误都吞掉，包括你拼错变量名这种"真 bug"。建议写 <code>except Exception as e:</code> 并打印原因。</div></div>
+  <div class="term"><div class="name">忘了缩进</div><div class="desc">try 里面和 except 里面都要缩进；两个块必须配对出现，不能只有 try。</div></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本概念完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>一句话带走：</b><span style="color:var(--teal800)">类是模具、对象是压出来的具体东西；带括号是动作，不带括号是资料；try/except 给程序系上安全带，让脏数据只跳过一条、不中断全程。</span></p>
+  </div>
+  <p class="meta">官方出处：Python 官方教程「第 9 章 类」「第 8 章 错误和异常」docs.python.org/zh-cn/3/tutorial/ · 下一份资料：06 情感分析 · 返回<a href="index.html">目录页</a></p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'s.sentiments 和 s.keywords(3) 的区别是什么？',
+  opts:['没区别，随便写','前者是属性（资料，不带括号），后者是方法（动作，带括号）','前者是方法，后者是属性','两个都是属性'],
+  a:1,
+  ex:'这是读懂第三方库的关键铁律：不带括号读资料，带括号做动作。写错会直接报错。'},
+ {q:'在代码里，"类"和"对象"的关系最像下面哪一组？',
+  opts:['模具和压出来的月饼','原料和成品','书名和作者','浏览器和网页'],
+  a:0,
+  ex:'类定义"应该有什么"（模具），对象是具体的一个（压出来的月饼）。SnowNLP("文本") 就是用一个类压出一个对象。'},
+ {q:'try / except 的主要作用是什么？',
+  opts:['让程序跑得更快','让程序出错时不崩溃，改走备用方案继续运行','把错误藏起来不给用户看','替代 if 判断'],
+  a:1,
+  ex:'批处理真实新闻数据时，空行、乱码等脏数据不可避免。try/except 让程序跳过问题条目、跑完全程，并可通过 as e 记录原因。'},
+ {q:'下面哪种 except 写法更推荐？',
+  opts:['except:','except Exception as e: 并打印原因','不要 except','except 后面留空不写代码'],
+  a:1,
+  ex:'裸写 except: 会吞掉所有错误（包括变量名拼错这类真 bug），不利于排查。推荐 except Exception as e: 并把原因打印出来。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！可以进入情感分析了。':score>=2?'不错！错题页再翻翻。':'把跟练代码敲一遍，类和异常就清楚了。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

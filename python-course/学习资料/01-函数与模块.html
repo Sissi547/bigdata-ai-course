@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料 01 · 函数与模块</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:34px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:25px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:640px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:20px 24px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14.5px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:#534AB7;font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+a{color:var(--blue600)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">学习资料 01 · 第 1 次课 上半场 · 概念：函数与模块</div>
+  <h1>函数与模块：<br>把重复的动作打包成一个按钮</h1>
+  <p class="lead">你已经会写代码了。但同样的统计动作写第三遍时，你会开始烦——函数就是为解决这种"烦"而生的。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>为什么学：三段几乎一样的代码</div>
+    <div class="t">5-20 min</div><div>讲解：def、参数、返回值、import</div>
+    <div class="t">20-38 min</div><div>跟练：把热词统计器改成函数</div>
+    <div class="t">38-45 min</div><div>测验：4 道小题 + 小结</div>
+  </div>
+  <p class="meta">依据 Python 官方中文教程 4.7 节（函数定义）与第 6 章（模块）· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">为什么学 · 5 分钟</div>
+  <h2>先看一段"很烦"的代码</h2>
+  <p class="lead">你统计了三篇稿件的词频，代码是这样的：</p>
+  <div class="codeblock">text1 = <span class="str">"暴雨 积水 暴雨 交通"</span>
+counts1 = {}
+<span class="kw">for</span> w <span class="kw">in</span> text1.split():
+    counts1[w] = counts1.get(w, <span class="kw">0</span>) + <span class="kw">1</span>
+
+text2 = <span class="str">"开学 典礼 开学"</span>
+counts2 = {}
+<span class="kw">for</span> w <span class="kw">in</span> text2.split():
+    counts2[w] = counts2.get(w, <span class="kw">0</span>) + <span class="kw">1</span></div>
+  <div class="quote">一模一样的四行，抄了两遍（第三篇还要抄）。<b style="color:var(--ink)">copy 得越多，改起来越容易漏</b>——将来想改进算法，得改三个地方。函数就是为了消灭这种复制粘贴。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">生活类比 · 3 分钟</div>
+  <h2>函数 = 咖啡机上的一个按钮</h2>
+  <div class="grid2">
+    <div class="card"><b>没有函数</b><p style="font-size:15px;color:var(--muted)">每次想喝咖啡，都要自己磨豆、烧水、过滤——步骤一样，但每次都得重来一遍。</p></div>
+    <div class="card"><b>有了函数</b><p style="font-size:15px;color:var(--muted)">把整套流程装进机器，面板上只有一个"美式"按钮。想喝？按一下。<b style="color:var(--ink)">流程被封装，动作被复用</b>。</p></div>
+  </div>
+  <div class="big-idea">写一次，用无数次 —— 这就是函数</div>
+  <p class="lead">按钮还能"选口味"：按"拿铁"出来的是拿铁。函数也一样，可以带<b>参数</b>（放什么进去），还能给回<b>结果</b>（出来什么）。</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心一 · 7 分钟</div>
+  <h2>def：定义一个函数</h2>
+  <div class="term"><div class="name">def</div><div class="desc">define（定义）的缩写。写法：<b>def 函数名(参数):</b> 然后缩进写流程。函数名取法和变量一样。</div></div>
+  <div class="codeblock"><span class="kw">def</span> greet(name):
+    <span class="kw">print</span>(<span class="str">f"你好，{name}！"</span>)
+
+greet(<span class="str">"王主编"</span>)      <span class="cm"># 这叫"调用"函数：按下按钮</span>
+greet(<span class="str">"李记者"</span>)
+<span class="out">你好，王主编！</span>
+<span class="out">你好，李记者！</span></div>
+  <div class="quote">两个动作要分清：<b style="color:var(--ink)">def 只是"造按钮"</b>（造完不会自己运行）；<b style="color:var(--ink)">调用才是"按按钮"</b>（写上函数名加括号才执行）。忘了调用，屏幕上什么都不会出现——新手第一个困惑就是这个。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心二 · 6 分钟</div>
+  <h2>return：把结果"交出来"</h2>
+  <div class="term"><div class="name">return</div><div class="desc">把函数算出的<b>结果交回给调用者</b>，可以存进变量继续用。没有 return，函数就只是干完活就走。</div></div>
+  <div class="codeblock"><span class="kw">def</span> count_words(text):
+    counts = {}
+    <span class="kw">for</span> w <span class="kw">in</span> text.split():
+        counts[w] = counts.get(w, <span class="kw">0</span>) + <span class="kw">1</span>
+    <span class="kw">return</span> counts                 <span class="cm"># 把统计结果交出去</span>
+
+result = count_words(<span class="str">"暴雨 积水 暴雨"</span>)   <span class="cm"># 用变量接住</span>
+<span class="kw">print</span>(result)
+<span class="out">{'暴雨': 2, '积水': 1}</span></div>
+  <div class="quote"><b style="color:var(--ink)">print 和 return 的区别</b>：print 是"喊出来给人看"，return 是"递过来给你用"。想让结果能被后续代码处理，就必须 return。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心三 · 5 分钟</div>
+  <h2>模块：别人写好的工具箱</h2>
+  <div class="term"><div class="name">import</div><div class="desc">把 Python 自带的"工具箱"（模块）搬进来用。官方教程的说法：模块是包含函数与变量的文件，用 import 引入。</div></div>
+  <div class="codeblock"><span class="kw">import</span> statistics                    <span class="cm"># 自带统计工具箱</span>
+views = [<span class="kw">1200</span>, <span class="kw">3400</span>, <span class="kw">2800</span>, <span class="kw">9100</span>, <span class="kw">1500</span>]
+<span class="kw">print</span>(statistics.mean(views))       <span class="out">3600</span>
+<span class="kw">print</span>(statistics.median(views))     <span class="out">2800</span></div>
+  <div class="quote">你不需要自己从零写"求平均数"——官方工具箱里早就有，一行 import 即可。<b style="color:var(--ink)">站在别人肩膀上，是编程的正经做法</b>，不是偷懒。课程后续用到的 snownlp、scikit-learn 也是这样引入的第三方模块。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 18 分钟</div>
+  <h2>动手：把热词统计器改造成函数</h2>
+  <p class="lead">对照第 4 课写过的统计器，这次把它装进"按钮"里，再点三次：</p>
+  <div class="codeblock"><span class="cm"># 把统计逻辑打包成函数</span>
+<span class="kw">def</span> count_words(text):
+    counts = {}
+    <span class="kw">for</span> w <span class="kw">in</span> text.split():
+        counts[w] = counts.get(w, <span class="kw">0</span>) + <span class="kw">1</span>
+    <span class="kw">return</span> counts
+
+<span class="cm"># 三篇稿件，同一个函数处理三次</span>
+news = [
+    <span class="str">"暴雨 积水 暴雨 交通"</span>,
+    <span class="str">"开学 典礼 开学 典礼 典礼"</span>,
+    <span class="str">"运动会 报名 开幕"</span>,
+]
+
+<span class="kw">for</span> n <span class="kw">in</span> news:               <span class="cm"># 复习第 3 课的 for 循环</span>
+    <span class="kw">print</span>(count_words(n))</div>
+  <div class="grid2" style="margin-top:8px">
+    <div class="card"><b>练习 A</b><p style="font-size:14px;color:var(--muted)">加一个函数 <code>top_word(counts)</code>，让它返回出现次数最多的那个词。提示：用 <code>max(counts, key=counts.get)</code>。</p></div>
+    <div class="card"><b>练习 B</b><p style="font-size:14px;color:var(--muted)">给 count_words 加第二个参数 <code>min_count=1</code>，只保留出现次数达到该值的词。</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">常见坑 · 3 分钟</div>
+  <h2>新手最容易栽的四个地方</h2>
+  <div class="term"><div class="name">忘了调用</div><div class="desc">只写 def 不写 <code>greet("王主编")</code>，程序不会报错，也不会输出——因为按钮造好了但没人按。</div></div>
+  <div class="term"><div class="name">忘了 return</div><div class="desc">函数里用 print 而不是 return，外面 <code>result = count_words(...)</code> 接到的是 <code>None</code>（空）。</div></div>
+  <div class="term"><div class="name">缩进漏了</div><div class="desc">def 下面的流程必须缩进。不缩进的话，那几行就"跑出"函数之外了——Python 的缩进是语法，不是排版。</div></div>
+  <div class="term"><div class="name">忘了括号</div><div class="desc">调用时写成 <code>greet</code> 只是"提到这个按钮"，<code>greet()</code> 才是"按下去"。差一对括号，结果差很远。</div></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本概念完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>一句话带走：</b><span style="color:var(--teal800)">函数 = 把一段流程装进按钮（def 造按钮，括号按按钮）；return 把结果交出来，import 把别人的工具箱搬进来。</span></p>
+  </div>
+  <p class="meta">官方出处：Python 官方教程「4.7 定义函数」「第 6 章 模块」docs.python.org/zh-cn/3/tutorial/ · 下一份资料：02 AI 是什么 · 返回<a href="index.html">目录页</a></p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'def count_words(text): 这一行的作用是什么？',
+  opts:['立刻运行统计并输出结果','定义一个叫 count_words 的函数（造按钮）','把 text 打印出来','导入一个叫 count_words 的模块'],
+  a:1,
+  ex:'def 是"造按钮"：写下流程但不执行。要真正跑起来，还得在下面调用它，例如 count_words("暴雨 积水")。'},
+ {q:'函数里想"把结果交给外面继续用"，应该用哪个关键字？',
+  opts:['print','return','import','def'],
+  a:1,
+  ex:'print 是喊给人看，return 是递过来给你用。想用 result = count_words(...) 接到结果，函数里必须写 return。'},
+ {q:'import statistics 是为了什么？',
+  opts:['把 Python 卸载','引入官方自带的统计工具箱，用里面的 mean、median 等现成函数','定义一个叫 statistics 的函数','下载一个软件'],
+  a:1,
+  ex:'模块就是别人写好的工具箱，import 一行即可使用，不必自己从零实现求平均数这类常用功能。'},
+ {q:'下面哪种写法能正确处理三篇稿件的词频统计？',
+  opts:['把统计代码复制三遍，每篇改一次变量名','写一个 count_words(text) 函数，然后调用三次','每篇单独开一个 .py 文件','用 print 打印三遍 text'],
+  a:1,
+  ex:'这正是函数的价值：一处修改、处处生效，避免复制带来的遗漏和不一致。复制三遍的写法将来改算法要改三个地方。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！可以进入下一个概念了。':score>=2?'不错！错题页再翻翻。':'把跟练代码敲一遍，函数就懂了。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

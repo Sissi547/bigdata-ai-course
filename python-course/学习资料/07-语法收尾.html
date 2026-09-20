@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料 07 · 语法收尾三件套</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:34px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:25px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:640px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:20px 24px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14.5px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:#534AB7;font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+a{color:var(--blue600)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">学习资料 07 · 第 4 次课 上半场 · 概念：推导式、排序与计数</div>
+  <h1>语法收尾三件套：<br>让代码短一半，思路清一倍</h1>
+  <p class="lead">三个"老手天天用、新手没听过"的工具。学完这三样，你处理数据的代码会明显变短——这是从"能写"到"写得利落"的分水岭。</p>
+  <div class="agenda">
+    <div class="t">0-3 min</div><div>为什么学：看着就烦的五行动</div>
+    <div class="t">3-24 min</div><div>讲解：推导式、sorted、Counter</div>
+    <div class="t">24-40 min</div><div>跟练：热词榜升级版</div>
+    <div class="t">40-45 min</div><div>测验 4 题 + 小结</div>
+  </div>
+  <p class="meta">依据 Python 官方中文教程 第 5 章（数据结构）· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">为什么学 · 3 分钟</div>
+  <h2>先看"笨办法"有多啰嗦</h2>
+  <p class="lead">想从标题列表里挑出所有长度超过 8 个字的标题，笨办法是：</p>
+  <div class="codeblock">long_titles = []                    <span class="cm"># 先准备空列表</span>
+<span class="kw">for</span> t <span class="kw">in</span> titles:
+    <span class="kw">if</span> <span class="kw">len</span>(t) > <span class="kw">8</span>:
+        long_titles.append(t)       <span class="cm"># 一条条往里塞</span></div>
+  <div class="quote">功能没错，但 4 行只干了一件事。<b style="color:var(--ink)">推导式把同样的事写成 1 行</b>，而且读起来就像一句话："把长的那些标题挑出来。"</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心一 · 8 分钟</div>
+  <h2>列表推导式：一行搞定筛选与变换</h2>
+  <div class="term"><div class="name">推导式</div><div class="desc">写法 <code>[表达式 for 变量 in 列表 if 条件]</code>，读作"对每个变量，满足条件就取这个表达式，组成新列表"。</div></div>
+  <div class="codeblock">titles = [<span class="str">"暴雨突袭三环积水"</span>, <span class="str">"开学典礼"</span>, <span class="str">"图书馆延长开放通知"</span>]
+
+<span class="cm"># 筛选：只留长度 6 以上的</span>
+long_titles = [t <span class="kw">for</span> t <span class="kw">in</span> titles <span class="kw">if</span> <span class="kw">len</span>(t) >= <span class="kw">6</span>]
+<span class="kw">print</span>(long_titles)
+<span class="out">['暴雨突袭三环积水', '图书馆延长开放通知']</span>
+
+<span class="cm"># 变换：给每条加前缀</span>
+tagged = [<span class="str">f"【快讯】{t}"</span> <span class="kw">for</span> t <span class="kw">in</span> titles]
+<span class="kw">print</span>(tagged[<span class="kw">0</span>])
+<span class="out">【快讯】暴雨突袭三环积水</span></div>
+  <div class="quote">先会读：<b style="color:var(--ink)">"对 titles 里的每个 t，满足 len(t)&gt;=6 才留下"</b>。读得懂就不会写错；写不出来时，先写笨办法再改造成推导式。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心二 · 7 分钟</div>
+  <h2>sorted：把排行榜排出来</h2>
+  <div class="term"><div class="name">sorted()</div><div class="desc">对列表排序，返回新列表（原列表不变）。关键武器是 <code>key</code> 和 <code>reverse</code> 两个参数。</div></div>
+  <div class="codeblock"><span class="cm"># 字典：词 → 次数（第 4 课的热词统计结果）</span>
+counts = {<span class="str">"暴雨"</span>: <span class="kw">3</span>, <span class="str">"开学"</span>: <span class="kw">5</span>, <span class="str">"食堂"</span>: <span class="kw">2</span>}
+
+<span class="cm"># 按"次数"从多到少排</span>
+<span class="kw">for</span> word, num <span class="kw">in</span> sorted(counts.items(), key=<span class="kw">lambda</span> x: x[<span class="kw">1</span>], reverse=<span class="kw">True</span>):
+    <span class="kw">print</span>(word, num)
+<span class="out">开学 5</span>
+<span class="out">暴雨 3</span>
+<span class="out">食堂 2</span></div>
+  <div class="quote"><code>counts.items()</code> 把字典变成"标签-数值"对的列表；<code>key=lambda x: x[1]</code> 意思是"按第 2 个元素（即次数）排"；<code>reverse=True</code> 是从大到小。<b style="color:var(--ink)">这三块拼起来就是新闻热词榜</b>。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心三 · 6 分钟</div>
+  <h2>Counter：数东西的专用工具</h2>
+  <div class="term"><div class="name">Counter</div><div class="desc">来自 <code>collections</code> 模块的计数器。一行就能完成第 4 课写了 6 行的词频统计。</div></div>
+  <div class="codeblock"><span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+words = <span class="str">"暴雨 积水 暴雨 交通 暴雨 开学"</span>.split()
+c = Counter(words)                <span class="cm"># 一行完成统计</span>
+<span class="kw">print</span>(c.most_common(<span class="kw">2</span>))          <span class="cm"># 直接取出现最多的前两名</span>
+<span class="out">[('暴雨', 3), ('积水', 1)]</span></div>
+  <div class="quote">对比第 4 课那个手写的 if/else 计数循环：功能一样，写法差 5 倍。<b style="color:var(--ink)">标准库里有的，就别自己造</b>——这是编程的基本经济学。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 16 分钟</div>
+  <h2>动手：热词榜升级版（三件套合体）</h2>
+  <div class="codeblock"><span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+text = <span class="str">"暴雨 积水 暴雨 交通 积水 暴雨 开学 典礼"</span>
+words = text.split()
+
+c = Counter(words)                                  <span class="cm"># ① 一行统计</span>
+top = c.most_common(<span class="kw">3</span>)                            <span class="cm"># ② 直接取前三</span>
+
+<span class="cm"># ③ 推导式：只保留出现 2 次以上的词</span>
+hot = [w <span class="kw">for</span> w, n <span class="kw">in</span> top <span class="kw">if</span> n >= <span class="kw">2</span>]
+
+<span class="kw">print</span>(<span class="str">"— 热词榜 —"</span>)
+<span class="kw">for</span> i, w <span class="kw">in</span> enumerate(hot, start=<span class="kw">1</span>):        <span class="cm"># enumerate 顺带编号</span>
+    <span class="kw">print</span>(<span class="str">f"{i}. {w}（{c[w]} 次）"</span>)</div>
+  <div class="grid2" style="margin-top:8px">
+    <div class="card"><b>练习 A</b><p style="font-size:14px;color:var(--muted)">把词换成你最近写的 10 条标题（用空格分隔），生成你自己的热词榜。</p></div>
+    <div class="card"><b>练习 B</b><p style="font-size:14px;color:var(--muted)">给榜单加一个"只看长度 ≥ 2 的字词"（排除"的""了"），提示：在推导式的条件里加 <code>and len(w) >= 2</code>。</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">常见坑 · 3 分钟</div>
+  <h2>三个容易写错的地方</h2>
+  <div class="term"><div class="name">推导式写太长</div><div class="desc">一行里塞三四个条件就没法读了。超过一层筛选，就退回普通 for 循环——<b>可读性优先于短</b>。</div></div>
+  <div class="term"><div class="name">sorted 忘了 items</div><div class="desc">直接对字典排序只能排"标签"，得到的是字母顺序。要按次数排必须写 <code>counts.items()</code>。</div></div>
+  <div class="term"><div class="name">Counter 忘了导入</div><div class="desc">它不在内置函数里，必须先 <code>from collections import Counter</code>，否则报 NameError。</div></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本概念完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>一句话带走：</b><span style="color:var(--teal800)">推导式一行做筛选与变换；sorted 配 key 与 reverse 排榜；Counter 一行完成统计。三件套合体，就是一份能上版面的热词榜。</span></p>
+  </div>
+  <p class="meta">官方出处：Python 官方教程「第 5 章 数据结构」（推导式、排序）与 collections.Counter 文档 docs.python.org/zh-cn/3/ · 下一份资料：08 文本分类与结业 · 返回<a href="index.html">目录页</a></p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=slides.length-1===cur;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'[t for t in titles if len(t) >= 6] 这行代码在做什么？',
+  opts:['把 titles 全部打印出来','挑出长度不小于 6 的标题，组成一个新列表','删除长度小于 6 的标题','把每条标题加长到 6 个字'],
+  a:1,
+  ex:'读作"对 titles 里的每个 t，满足 len(t)>=6 才留下"。推导式一次完成筛选或变换，比四行 for 循环更利落。'},
+ {q:'要按"出现次数从多到少"给字典排序，正确写法是？',
+  opts:['sorted(counts)','sorted(counts.items(), key=lambda x: x[1], reverse=True)','counts.sort()','sorted(counts, reverse=True, key=len)'],
+  a:1,
+  ex:'直接对字典排序只会排"标签"。要用 items() 取出键值对，用 key=lambda x: x[1] 指定按次数排，reverse=True 表示从大到小。'},
+ {q:'collections.Counter 的主要用途是？',
+  opts:['给列表排序','一行完成计数统计，并可用 most_common(n) 直接取前 n 名','读取文件','生成随机数'],
+  a:1,
+  ex:'Counter(words) 一行完成词频统计，c.most_common(3) 直接给出前三名——比手写 if/else 计数循环简洁得多。标准库有的就别自己造。'},
+ {q:'关于列表推导式，下面的说法哪个正确？',
+  opts:['必须用推导式，用 for 循环是错的','能一行写完最好，哪怕条件塞了三四个','可读性优先：条件一多就该退回普通 for 循环','推导式只能做筛选，不能做变换'],
+  a:2,
+  ex:'推导式既可筛选也可变换，但它不是必须的。业内共识是可读性优先：一行里塞太多条件反而难维护，此时用普通 for 循环更合适。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！最后一课结业项目见。':score>=2?'不错！错题页再翻翻。':'把跟练代码跑一遍，三件套很快能上手。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

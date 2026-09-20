@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料 04 · 文字变数字：词袋模型</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:34px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:25px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:640px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:20px 24px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14.5px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:#534AB7;font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+a{color:var(--blue600)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">学习资料 04 · 第 2 次课 下半场 · 概念：文字变数字（词袋模型）</div>
+  <h1>词袋模型：<br>把一句话拆开，数一数每个词出现几次</h1>
+  <p class="lead">上半场你洗出了干净词表，但词表还是一堆汉字。这一场我们把它变成数字表格——那是模型唯一看得懂的输入。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>为什么学：模型看不懂"暴雨"两个字</div>
+    <div class="t">5-20 min</div><div>讲解：词袋直觉、字典手工计数、CountVectorizer</div>
+    <div class="t">20-38 min</div><div>跟练：三篇稿件变成一张数字表格</div>
+    <div class="t">38-45 min</div><div>测验：4 道小题 + 小结</div>
+  </div>
+  <p class="meta">依据 scikit-learn 官方文档「文本特征提取」· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">为什么学 · 5 分钟</div>
+  <h2>模型看文字，就像你看一串乱码</h2>
+  <p class="lead">上一次课，你信心满满地把三条标题喂给模型：</p>
+  <div class="codeblock">标题 1：暴雨导致交通中断
+标题 2：校运会开幕
+
+<span class="cm"># 结果报错：模型期望的输入是"数字"，收到的是"字符串"</span>
+<span class="cm"># 它不认识"暴雨"这两个字，它只会算数字</span></div>
+  <div class="quote">这和你的处境很像：给你一篇稿子让你判断情绪，你一眼就看懂；给你一串 <code>[0, 2, 0, 1, 0]</code>，你完全不知道在说什么。<b style="color:var(--ink)">想让机器帮你读新闻，就得先把新闻翻译成它的语言。</b></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">生活类比 · 3 分钟</div>
+  <h2>词袋 = 把一袋糖按口味数一遍</h2>
+  <div class="grid2">
+    <div class="card"><b>倒进袋子</b><p style="font-size:15px;color:var(--muted)">把整篇稿子的词全倒进一个袋子：暴雨、积水、暴雨、停课……不排队、不编号，先混在一起。</p></div>
+    <div class="card"><b>按口味点数</b><p style="font-size:15px;color:var(--muted)">然后只做一件事：数每种口味有几颗——暴雨 2 颗、积水 1 颗、停课 1 颗。写下来就是一张表。</p></div>
+  </div>
+  <div class="big-idea">词袋只看"出现了几次"，不看"排在第几个"</div>
+  <p class="lead">少了一个词就记 0。于是每一篇稿件，都会变成一排数字——<b>这一排数字，就是它有资格递给模型的"入场券"</b>。</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心一 · 5 分钟</div>
+  <h2>词袋的三个动作：拆词、数数、排成排</h2>
+  <div class="term"><div class="name">拆词</div><div class="desc">把句子切成一个个词。英文靠空格，中文没空格，得先"分词"——上半场你已经用 re.findall 捞过 2 字以上的词，第 06 份资料会教你用 SnowNLP 分得更准。</div></div>
+  <div class="term"><div class="name">词表</div><div class="desc">把所有稿件里出现过的词收集起来、去重、排个序，形成一张"一共有哪些词"的清单。这张清单就是数字表格的<b>列名</b>。</div></div>
+  <div class="term"><div class="name">数字表格</div><div class="desc">每一行是一篇稿件，每一列是词表里的一个词，格子里填<b>这个词在这篇里出现了几次</b>。这一排数字，专业名叫<b>向量</b>。</div></div>
+  <div class="codeblock">词表：  [<span class="str">'暴雨'</span>, <span class="str">'积水'</span>, <span class="str">'停课'</span>, <span class="str">'校运会'</span>, <span class="str">'开幕'</span>]
+稿件1： [  <span class="kw">2</span>,   <span class="kw">1</span>,   <span class="kw">0</span>,    <span class="kw">0</span>,     <span class="kw">0</span> ]     <span class="cm"># 暴雨 积水 暴雨</span>
+稿件2： [  <span class="kw">1</span>,   <span class="kw">0</span>,   <span class="kw">1</span>,    <span class="kw">0</span>,     <span class="kw">0</span> ]     <span class="cm"># 暴雨 停课</span>
+稿件3： [  <span class="kw">0</span>,   <span class="kw">0</span>,   <span class="kw">0</span>,    <span class="kw">2</span>,     <span class="kw">1</span> ]     <span class="cm"># 校运会 开幕 校运会</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心二 · 6 分钟</div>
+  <h2>手工做一遍：字典就是那只袋子</h2>
+  <div class="term"><div class="name">用字典数</div><div class="desc">第 4 课你已经写过：<b>counts[w] = counts.get(w, 0) + 1</b>。现在你知道了，那四行代码干的就是"词袋"这件事。</div></div>
+  <div class="codeblock">docs = [<span class="str">"暴雨 积水 暴雨"</span>,
+        <span class="str">"暴雨 停课"</span>,
+        <span class="str">"校运会 开幕 校运会"</span>]
+
+total = {}                       <span class="cm"># 字典 = 那只袋子</span>
+<span class="kw">for</span> doc <span class="kw">in</span> docs:
+    <span class="kw">for</span> w <span class="kw">in</span> doc.split():
+        total[w] = total.get(w, <span class="kw">0</span>) + <span class="kw">1</span>
+<span class="kw">print</span>(total)
+<span class="out">{'暴雨': 3, '积水': 1, '停课': 1, '校运会': 2, '开幕': 1}</span>
+
+<span class="cm"># 词表：把袋子里的标签去重排序，当作表格的列名</span>
+vocab = sorted(total)
+<span class="kw">print</span>(vocab)
+<span class="out">['停课', '开幕', '暴雨', '校运会', '积水']</span></div>
+  <div class="quote">注意上面这个 total 是<b>三篇加起来</b>的总数；表格要的是<b>每一篇各自</b>的数字，所以下一段我们按篇数一遍。（列的顺序由程序排序决定，不用背。）</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心三 · 6 分钟</div>
+  <h2>工具箱版：一行 fit，全自动</h2>
+  <div class="term"><div class="name">CountVectorizer</div><div class="desc">scikit-learn 里专门做词袋的工具，官方文档「文本特征提取」章节的第一个示例。你把一段段文本交给它，它自动完成"拆词 → 建词表 → 数数 → 排成表格"。</div></div>
+  <div class="codeblock"><span class="kw">from</span> sklearn.feature_extraction.text <span class="kw">import</span> CountVectorizer
+
+docs = [<span class="str">"暴雨 积水 暴雨"</span>, <span class="str">"暴雨 停课"</span>, <span class="str">"校运会 开幕 校运会"</span>]
+
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(docs)              <span class="cm"># 学词表 + 转数字，一步到位</span>
+
+<span class="kw">print</span>(vectorizer.get_feature_names_out())      <span class="cm"># 列名（词表）</span>
+<span class="kw">print</span>(X.toarray())                            <span class="cm"># 数字表格，变成普通数组看</span>
+<span class="out">['停课' '开幕' '暴雨' '校运会' '积水']</span>
+<span class="out">[[0 0 2 0 1]</span>
+<span class="out"> [1 0 1 0 0]</span>
+<span class="out"> [0 1 0 2 0]]</span></div>
+  <div class="quote">跟你手工算的那张表一模一样吧？<b style="color:var(--ink)">工具箱没有魔法，它只是把你写过的循环打包了</b>——官方文档里也特别提到：如果文本已经提前分好词，用空格隔开就好。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 18 分钟</div>
+  <h2>动手：三篇稿件，一张数字表格</h2>
+  <p class="lead"><b style="color:var(--ink)">敲一遍，别复制</b>。新建 <code>bow01.py</code>，先不装任何库，纯 Python 走一遍全过程：</p>
+  <div class="codeblock"><span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+docs = [<span class="str">"暴雨 积水 暴雨"</span>,
+        <span class="str">"暴雨 停课"</span>,
+        <span class="str">"校运会 开幕 校运会"</span>]
+
+<span class="cm"># 第 1 步：收集所有出现过的词，排序成词表</span>
+vocab = sorted({w <span class="kw">for</span> doc <span class="kw">in</span> docs <span class="kw">for</span> w <span class="kw">in</span> doc.split()})
+<span class="kw">print</span>(<span class="str">"词表："</span>, vocab)
+
+<span class="cm"># 第 2 步：每篇稿件按词表数一遍，变成一排数字</span>
+<span class="kw">for</span> doc <span class="kw">in</span> docs:
+    counter = Counter(doc.split())          <span class="cm"># Counter 直接替你数好</span>
+    row = [counter.get(w, <span class="kw">0</span>) <span class="kw">for</span> w <span class="kw">in</span> vocab]
+    <span class="kw">print</span>(doc, <span class="str">"->"</span>, row)</div>
+  <div class="grid2" style="margin-top:8px">
+    <div class="card"><b>练习 A</b><p style="font-size:14px;color:var(--muted)">往 docs 里再加一篇"暴雨 停课 暴雨"，重跑一次，看看表格多出来的那一行长什么样。</p></div>
+    <div class="card"><b>练习 B</b><p style="font-size:14px;color:var(--muted)">把三篇的 Counter 用 + 加成一个总的（Counter 支持相加），找出整个语料里出现最多的词。提示：回到概念 01 的 <code>max(counts, key=counts.get)</code>。</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">常见坑 · 3 分钟</div>
+  <h2>词袋最容易踩的三个坑</h2>
+  <div class="term"><div class="name">以为它懂意思</div><div class="desc">词袋只数次数，不问顺序。"人咬狗"和"狗咬人"在它眼里完全一样；"不太满意"和"不，太满意了"也分不出。这是它的先天短板。</div></div>
+  <div class="term"><div class="name">中文直接扔进去</div><div class="desc">官方文档写明：默认配置提取<b>至少 2 个字母的词</b>，中文单字（比如"雨"）会被悄悄丢掉。正确做法是先分词、再用空格连起来，或像文档 Tips 那样传 <code>analyzer=str.split</code>。</div></div>
+  <div class="term"><div class="name">新词凭空消失</div><div class="desc">官方文档明确：训练语料里没出现过的词，在之后 transform 时被<b>完全忽略</b>（那一行数字会全是 0）。词表在 fit 那一刻就定死了。</div></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本概念完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>一句话带走：</b><span style="color:var(--teal800)">词袋就是把一篇稿子拆成词、数每个词出现几次，排成"一行一篇、一列一词"的数字表格；这只袋子不管语序，CountVectorizer 只是把这件事自动化了。</span></p>
+  </div>
+  <p class="meta">官方出处：scikit-learn 官方文档「文本特征提取」<a href="https://scikit-learn.org/stable/modules/feature_extraction.html">scikit-learn.org/stable/modules/feature_extraction.html</a> · 下一份资料：05 类与对象 + 异常处理 · 返回<a href="index.html">目录页</a></p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'词袋模型（Bag of Words）里"袋子"这个比喻，想说明什么？',
+  opts:['词要按顺序整齐装好','只看每个词出现了几次，不关心它们的先后顺序','只能装英文单词','句子越长效果越好'],
+  a:1,
+  ex:'词袋把句子拆成一堆词丢进袋子，只数每种词出现几次，顺序信息丢掉了。所以"人咬狗"和"狗咬人"的词袋结果完全一样——这既是它简单好用的原因，也是它的短板（第 08 份的模型会继承这个特点）。它跟语种无关，句子长短也不是评判标准。'},
+ {q:'Counter(["暴雨", "积水", "暴雨"]) 得到的结果是什么？',
+  opts:["{'暴雨': 2, '积水': 1}",'原样返回列表 ["暴雨", "积水", "暴雨"]','只返回一个数字 3','返回 None'],
+  a:0,
+  ex:'Counter 是 collections 里专门"数数"的工具，直接给出"元素 → 出现次数"的字典，省掉自己写 for 循环加 get 的麻烦。原样返回列表那不是计数；3 只是元素总数，不是每个词各几次；返回 None 更是没发生任何统计。'},
+ {q:'把中文句子交给 CountVectorizer，按官方文档的默认行为，下面哪个说法对？',
+  opts:['默认会提取所有字，包括单字','默认提取至少 2 个字符的词，单字会被丢掉','它必须先训练一个中文语言模型才能用','它只能处理英文，遇到中文会直接报错'],
+  a:1,
+  ex:'官方文档写明默认配置"提取至少 2 个字母的单词"，所以中文单字（如"雨"）会被丢掉。这就是中文要先分词、再用空格把词连起来的原因；文档 Tips 里也提到，文本已分好词时可以直接传 analyzer=str.split。它不会报错，只是悄悄少掉一些词——这种"不报错的错"最难查。它也不需要预先训练语言模型，fit 的时候边看数据边建词表。'},
+ {q:'用 CountVectorizer 建好词表后，再去 transform 一条含有全新词的新稿件，会怎样？',
+  opts:['自动为这个新词新增一列','新词被完全忽略，那一行数字全是 0','程序报错，要求重新训练','新词会被自动替换成最相近的旧词'],
+  a:1,
+  ex:'官方文档明确说明：训练语料里没出现过的词，在后续 transform 调用中会被完全忽略，文档示例里读入一句全新的话，得到的是一行全 0。词表在 fit 那一刻就定下来了，想让模型认识新词，就得把新数据一起放进去重新 fit。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！可以进入下一个概念了。':score>=2?'不错！错题页再翻翻。':'把跟练代码敲一遍，词袋就不抽象了。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

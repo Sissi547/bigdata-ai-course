@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料目录 · Python 语法到 AI 应用</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --purple50:#EEEDFE; --purple600:#534AB7; --purple800:#3C3489;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.wrap{max-width:900px;margin:0 auto;padding:36px 20px 70px}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:10px}
+h1{font-size:32px;font-weight:700;line-height:1.35;margin-bottom:12px}
+h2{font-size:22px;font-weight:700;margin:38px 0 14px;padding-top:14px;border-top:.5px solid var(--line)}
+.lead{font-size:16px;color:var(--muted);max-width:700px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:18px 22px;font-size:16px;font-weight:600;color:var(--blue800);text-align:center;margin:16px 0}
+.group{margin-bottom:22px}
+.group-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.group-head .g-name{font-weight:700;font-size:17px}
+.group-head .g-sub{font-size:13px;color:var(--faint)}
+.items{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+a.item{display:block;text-decoration:none;color:var(--ink);border:.5px solid var(--line);border-radius:var(--r);padding:14px 16px;transition:border-color .15s}
+a.item:hover{border-color:var(--blue600)}
+a.item .n{font-size:12px;font-weight:600;color:var(--blue600);letter-spacing:.06em}
+a.item .t{font-weight:600;font-size:16px;margin-top:2px}
+a.item .d{font-size:13px;color:var(--faint);margin-top:3px}
+a.item.grammar{border-left:3px solid var(--purple600)}
+a.item.ai{border-left:3px solid var(--teal600)}
+.tag{font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;margin-left:6px;vertical-align:middle}
+.tag.g{background:var(--purple50);color:var(--purple800)}
+.tag.a{background:var(--teal50);color:var(--teal800)}
+.flow{background:var(--surface);border-radius:var(--r);padding:22px 24px;font-family:ui-monospace,Consolas,monospace;font-size:14px;line-height:2.1;white-space:pre;overflow-x:auto}
+.flow .k{color:var(--purple800);font-weight:600}
+.flow .a{color:var(--teal800);font-weight:600}
+.flow .cm{color:var(--faint)}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:16px 0;font-size:15px}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+th,td{border:.5px solid var(--line);padding:9px 13px;text-align:left;vertical-align:top}
+th{background:var(--surface);font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:30px}
+.status{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--green50);color:var(--green600);font-weight:600;margin-left:6px}
+.status.wait{background:var(--amber50);color:var(--amber600)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">大数据与人工智能 · 学习资料总目录</div>
+  <h1>八个概念，一张地图</h1>
+  <p class="lead">每份资料对应学习地图中的一个半场（45 分钟）。<b>建议按序号顺序学</b>；也可以从任意一个感兴趣的进入，每份都能独立看懂。紫色左边框是语法概念，绿色左边框是 AI 概念。</p>
+  <div class="big-idea">语法概念 → 当天在 AI 应用里用上 → 应用卡住了 → 回头补下一个语法</div>
+
+  <h2>第 1 次课 · 函数模块 + AI 初体验</h2>
+  <div class="group">
+    <div class="items">
+      <a class="item grammar" href="01-函数与模块.html">
+        <div class="n">概念 01 <span class="tag g">语法</span></div>
+        <div class="t">函数与模块</div>
+        <div class="d">把重复动作打包成按钮；import 别人的工具箱</div>
+      </a>
+      <a class="item ai" href="02-AI是什么.html">
+        <div class="n">概念 02 <span class="tag a">AI</span><span class="status">已完成</span></div>
+        <div class="t">AI 是什么：机器学习入门</div>
+        <div class="d">和"写死规则"的区别；第一次让模型给标题打分</div>
+      </a>
+    </div>
+  </div>
+
+  <h2>第 2 次课 · 文本清洗 + 文字变数字</h2>
+  <div class="group">
+    <div class="items">
+      <a class="item grammar" href="03-正则表达式与CSV.html">
+        <div class="n">概念 03 <span class="tag g">语法</span><span class="status">已完成</span></div>
+        <div class="t">正则表达式与 CSV</div>
+        <div class="d">洗掉标点杂质；把表格数据读进来</div>
+      </a>
+      <a class="item ai" href="04-词袋模型.html">
+        <div class="n">概念 04 <span class="tag a">AI</span><span class="status">已完成</span></div>
+        <div class="t">文字变数字：词袋模型</div>
+        <div class="d">电脑只认识数字，句子如何变成表格</div>
+      </a>
+    </div>
+  </div>
+
+  <h2>第 3 次课 · 类与异常 + 情感分析</h2>
+  <div class="group">
+    <div class="items">
+      <a class="item grammar" href="05-类与异常处理.html">
+        <div class="n">概念 05 <span class="tag g">语法</span><span class="status">已完成</span></div>
+        <div class="t">类与对象 + 异常处理</div>
+        <div class="d">看懂第三方库的写法；脏数据不让程序崩溃</div>
+      </a>
+      <a class="item ai" href="06-情感分析.html">
+        <div class="n">概念 06 <span class="tag a">AI</span><span class="status">已完成</span></div>
+        <div class="t">情感分析：词典法到机器学习</div>
+        <div class="d">给新闻标题排"最正面/最负面"榜</div>
+      </a>
+    </div>
+  </div>
+
+  <h2>第 4 次课 · 语法收尾 + 文本分类结业</h2>
+  <div class="group">
+    <div class="items">
+      <a class="item grammar" href="07-语法收尾.html">
+        <div class="n">概念 07 <span class="tag g">语法</span><span class="status">已完成</span></div>
+        <div class="t">推导式、排序与计数</div>
+        <div class="d">三件套让代码缩短一半</div>
+      </a>
+      <a class="item ai" href="08-文本分类.html">
+        <div class="n">概念 08 <span class="tag a">AI</span><span class="status">已完成</span></div>
+        <div class="t">文本分类与结业项目</div>
+        <div class="d">朴素贝叶斯直觉 + 完整新闻分析流水线</div>
+      </a>
+    </div>
+  </div>
+
+  <h2>概念之间怎么连起来</h2>
+  <div class="flow"><span class="k">01 函数</span>  <span class="cm">把统计逻辑打包 → 后面每一步都靠它复用</span>
+   ↓
+<span class="k">02 AI 是什么</span>  <span class="cm">先知道"模型"是怎么一回事</span>
+   ↓
+<span class="k">03 清洗</span> → <span class="a">04 词袋</span>  <span class="cm">脏文本 → 干净词表 → 数字表格（AI 的输入）</span>
+   ↓
+<span class="k">05 类与异常</span>  <span class="cm">看懂库的调用方式 + 程序不崩</span>
+   ↓
+<span class="a">06 情感分析</span>  <span class="cm">第一个 AI 应用：给文字打分</span>
+   ↓
+<span class="k">07 推导式/计数</span>  <span class="cm">让处理数据的代码更利落</span>
+   ↓
+<span class="a">08 文本分类 + 结业</span>  <span class="cm">串成完整流水线：读入 → 清洗 → 打分 → 分类</span></div>
+
+  <div class="quote"><b style="color:var(--ink)">读法建议</b>：先看概念 01，然后直接跳到 02（很多同学在这里第一次理解"AI 不神秘"）；03 和 04 是搭档，一起看；06 和 08 是两座高峰，各留出一整段完整时间。</div>
+
+  <h2>相关页面</h2>
+  <table>
+    <tr><th>页面</th><th>用途</th></tr>
+    <tr><td><a href="../学习地图.html">学习地图</a></td><td>四次课的时间分配与安排总览</td></tr>
+    <tr><td><a href="../第1课-初识Python.html">第 1 课</a> · <a href="../第2课-数据类型与字符串.html">第 2 课</a> · <a href="../第3课-列表判断与循环.html">第 3 课</a> · <a href="../第4课-综合实战新闻热词统计器.html">第 4 课</a></td><td>前置四课（基础语法）</td></tr>
+  </table>
+
+  <h2>权威来源</h2>
+  <table>
+    <tr><th>内容</th><th>来源</th></tr>
+    <tr><td>Python 语法</td><td>Python 官方中文教程 <a href="https://docs.python.org/zh-cn/3/tutorial/">docs.python.org/zh-cn/3/tutorial/</a></td></tr>
+    <tr><td>机器学习与文本处理</td><td>scikit-learn 官方用户指南 <a href="https://scikit-learn.org/stable/user_guide.html">scikit-learn.org</a></td></tr>
+    <tr><td>中文情感分析</td><td>SnowNLP 开源项目 <a href="https://github.com/isnowfy/snownlp">github.com/isnowfy/snownlp</a></td></tr>
+  </table>
+
+  <p class="meta">步文萱（Sissi547）· 大数据与人工智能 · 目录页 · 生成日期 2026-09-20 · 本页由 learning-material-generator 技能维护</p>
+</div>
+</body>
+</html>

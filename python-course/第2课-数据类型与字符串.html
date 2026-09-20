@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 第 2 课 · 数据类型与字符串</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.7}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:36px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:26px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:620px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:22px 26px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:15px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:var(--purple600);font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">Python 四课系列 · 第 2 课 / 共 4 课</div>
+  <h1>数据类型与字符串：<br>自动生成一封采访邀请函</h1>
+  <p class="lead">上节课的"盒子"里能装不同种类的东西：文字、数字。这节课搞懂它们的区别，学会让它们组合成一句话。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>回顾上节课 + 导入：邀请函里藏着两种数据</div>
+    <div class="t">5-18 min</div><div>讲解：数字、字符串、f-string、input</div>
+    <div class="t">18-35 min</div><div>跟练：一封会自动变内容的邀请函</div>
+    <div class="t">35-42 min</div><div>测验：4 道小题</div>
+    <div class="t">42-45 min</div><div>小结与作业</div>
+  </div>
+  <p class="meta">内容依据 Python 官方中文教程第 3、7 章 · 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念一 · 6 分钟</div>
+  <h2>两种最重要的"数据类型"</h2>
+  <div class="term"><div class="name">字符串 str</div><div class="desc"><b>文字</b>。必须套引号。名字是 string 的缩写——一串字符。</div></div>
+  <div class="term"><div class="name">整数 int</div><div class="desc"><b>不带小数点的数</b>。不加引号。integer 的缩写。</div></div>
+  <div class="codeblock">headline = <span class="str">"开学典礼明日举行"</span>   <span class="cm"># 文字 → 引号 + str</span>
+pageviews = <span class="kw">5023</span>                <span class="cm"># 数字 → 不加引号 + int</span>
+<span class="kw">print</span>(pageviews + <span class="kw">1</span>)
+<span class="out">5024</span></div>
+  <div class="quote">引号是两种类型的分界线：<span class="code">"5023"</span> 是<b style="color:var(--ink)">文字</b>（不能做加法算术），<span class="code">5023</span> 才是<b style="color:var(--ink)">数</b>。类型搞混，是新手报错排行榜第一名。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">数字的算术 · 5 分钟</div>
+  <h2>Python 是个不要工资的计算器</h2>
+  <div class="codeblock"><span class="kw">print</span>(<span class="kw">8</span> + <span class="kw">2</span>)    <span class="out">10</span>
+<span class="kw">print</span>(<span class="kw">8</span> - <span class="kw">2</span>)    <span class="out">6</span>
+<span class="kw">print</span>(<span class="kw">8</span> * <span class="kw">2</span>)    <span class="out">16</span>
+<span class="kw">print</span>(<span class="kw">8</span> / <span class="kw">2</span>)    <span class="out">4.0</span>   <span class="cm"># 注意：除法结果带小数点</span></div>
+  <div class="quote">新闻场景：月发稿 24 篇，平均每周几篇？<span class="code">print(24 / 4)</span> → 6.0。加、减、乘、除四个符号：+ - * /，其中乘号是星号 <b>*</b>，除号是斜杠 <b>/</b>——键盘上都能找到。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念二 · 7 分钟</div>
+  <h2>f-string：让文字和数字"组装成句"</h2>
+  <div class="term"><div class="name">f-string</div><div class="desc">在引号<b>前面加个 f</b>，然后在句子里挖<b>花括号槽位 { }</b>，运行时把变量的值填进去。f 是 format（格式化）的缩写。</div></div>
+  <div class="codeblock">name = <span class="str">"王老师"</span>
+time = <span class="str">"本周四下午两点"</span>
+invite = <span class="kw">f</span><span class="str">"邀请{name}于{time}接受采访"</span>
+<span class="kw">print</span>(invite)
+<span class="out">邀请王老师于本周四下午两点接受采访</span></div>
+  <div class="quote">没有 f-string 之前，拼句子要用很多加号，又长又容易错。官方教程明确推荐用 f-string 处理这类场景——<b style="color:var(--ink)">改一个变量，整句话自动更新</b>，这正是"程序"的意义。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念三 · 6 分钟</div>
+  <h2>input()：让读稿的人"说话"</h2>
+  <div class="term"><div class="name">input()</div><div class="desc">程序运行到这一行会<b>停下来等你打字</b>，你输入什么，它就把什么装进变量。括号里放一句提示语。</div></div>
+  <div class="codeblock">name = <span class="kw">input</span>(<span class="str">"受访者姓名："</span>)
+topic = <span class="kw">input</span>(<span class="str">"采访主题："</span>)
+<span class="kw">print</span>(<span class="kw">f</span><span class="str">"已登记：{name}，主题「{topic}」"</span>)</div>
+  <div class="quote"><b style="color:var(--ink)">新手第二大坑</b>：input() 收到的一切都是<b>文字（str）</b>。哪怕你输入 2026，它也是文字 "2026"。想做算术，要先"转换类型"：<span class="code">int(input(...))</span>——给文字脱掉引号外套。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 17 分钟</div>
+  <h2>动手：一封会自动变的采访邀请函</h2>
+  <div class="codeblock"><span class="cm"># 自动邀请函生成器</span>
+name = <span class="kw">input</span>(<span class="str">"受访者姓名："</span>)
+topic = <span class="kw">input</span>(<span class="str">"采访主题："</span>)
+duration = <span class="kw">int</span>(<span class="kw">input</span>(<span class="str">"预计时长（分钟）："</span>))
+
+<span class="kw">print</span>(<span class="str">"──────── 采访邀请函 ────────"</span>)
+<span class="kw">print</span>(<span class="kw">f</span><span class="str">"尊敬的{name}老师："</span>)
+<span class="kw">print</span>(<span class="kw">f</span><span class="str">"我们希望就「{topic}」进行约{duration}分钟的采访。"</span>)
+<span class="kw">print</span>(<span class="kw">f</span><span class="str">"折算下来约{duration / 60}小时，期待您的回复！"</span>)</div>
+  <div class="grid2" style="margin-top:8px">
+    <div class="card"><b>练习 A</b><p style="font-size:14px;color:var(--muted)">运行三遍，输入三个不同的人名，观察邀请函如何自动变化。</p></div>
+    <div class="card"><b>练习 B（思考题）</b><p style="font-size:14px;color:var(--muted)">输入时长 90，最后一行输出"约1.5小时"。如果把 <span class="code">duration / 60</span> 改成文字拼接会怎样？——试着自己拆解这个报错。</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 6 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本课完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>本课三件套：</b><span style="color:var(--teal800)">引号内外分类型（str/int）；f-string 挖槽自动填空；input() 停下等你输入且收到的都是文字。作业：给你的邀请函加一个"记者署名"变量。</span></p>
+  </div>
+  <p class="meta">官方出处：Python 官方教程第 3 章与第 7 章（docs.python.org/zh-cn/3/tutorial/introduction.html、/tutorial/inputoutput.html）· 下一课：列表、判断与循环</p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'news_count = 12 里，news_count 是什么数据类型？',
+  opts:['字符串 str（因为有引号）','整数 int（12 没有引号）','说不清','是 input 类型'],
+  a:1,
+  ex:'引号是文字的标志。12 没引号，是整数 int。如果写成 "12" 就是文字，不能做算术。'},
+ {q:'print("3" + "5") 的输出是什么？',
+  opts:['8','35','报错','3 5'],
+  a:1,
+  ex:'两个都是文字（有引号），+ 对文字的含义是"拼接"，所以输出 35。这就是"文字里的 3"和"数字 3"的区别。'},
+ {q:'f-string 里，"挖槽"用的符号是什么？',
+  opts:['[ ] 方括号','{ } 花括号','( ) 圆括号','< > 尖括号'],
+  a:1,
+  ex:'引号前加 f，句子里用 {变量名} 挖槽，运行时自动填入变量的值。改一个变量，整句话自动更新。'},
+ {q:'用 input() 让用户输入年龄 20，想让"年龄+1"，正确写法是？',
+  opts:['age + 1','int(age) + 1','"age" + 1','age("1")'],
+  a:1,
+  ex:'input() 收到的一切都是文字。"20" 是文字不能做加法，要先 int(age) 把它转成数字，再 +1。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！下节课见。':score>=2?'不错！错题页再翻翻。':'把跟练代码再敲一遍，类型就清楚了。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习地图 · Python 语法到 AI 应用</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --purple50:#EEEDFE; --purple600:#534AB7; --purple800:#3C3489;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.wrap{max-width:900px;margin:0 auto;padding:36px 20px 70px}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:10px}
+h1{font-size:32px;font-weight:700;line-height:1.35;margin-bottom:12px}
+h2{font-size:22px;font-weight:700;margin:38px 0 14px;padding-top:14px;border-top:.5px solid var(--line)}
+.lead{font-size:16px;color:var(--muted);max-width:680px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.session{margin-bottom:18px;border:.5px solid var(--line);border-radius:var(--r);overflow:hidden}
+.session-head{background:var(--surface);padding:12px 20px;font-weight:700;font-size:17px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.session-head .tag{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px}
+.half{display:grid;grid-template-columns:96px 1fr;gap:0}
+.half>div{padding:14px 20px;border-top:.5px solid var(--line)}
+.half .label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.half .label .min{font-size:12px;color:var(--faint);font-weight:400}
+.half.a .label{background:var(--blue50);color:var(--blue800)}
+.half.b .label{background:var(--teal50);color:var(--teal800)}
+.half .body p{font-size:14px;color:var(--muted);margin-top:4px}
+.half .body b{color:var(--ink)}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+th,td{border:.5px solid var(--line);padding:9px 13px;text-align:left;vertical-align:top}
+th{background:var(--surface);font-weight:600}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:16px 0;font-size:15px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:18px 22px;font-size:17px;font-weight:600;color:var(--blue800);text-align:center;margin:16px 0}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:12px}
+.links a{display:block;text-decoration:none;color:var(--ink);border:.5px solid var(--line);border-radius:var(--r);padding:14px 16px;transition:border-color .15s}
+.links a:hover{border-color:var(--blue600)}
+.links .n{font-size:12px;color:var(--blue600);font-weight:600}
+.links .t{font-weight:600;font-size:15px;margin-top:2px}
+.links .d{font-size:13px;color:var(--faint);margin-top:2px}
+.meta{font-size:13px;color:var(--faint);margin-top:30px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:14px;background:var(--surface);border-radius:6px;padding:2px 7px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">大数据与人工智能 · 学习路线</div>
+  <h1>从 Python 语法到 AI 应用：<br>4 次课学习地图</h1>
+  <p class="lead">每次课 90 分钟 = <b>上半场补语法</b> + <b>下半场立刻用</b>。学一个语法点，当天就在 AI 场景里兑现，不留"学了没处用"的空窗。全部例子围绕新闻场景设计。</p>
+
+  <div class="big-idea">前置：已完成四课基础（print、变量、列表、if/for、字典、读文件、热词统计器）</div>
+
+  <h2>四次课总览</h2>
+
+  <div class="session">
+    <div class="session-head"><span>第 1 次课 · 函数模块 + AI 初体验</span><span class="tag" style="background:var(--blue50);color:var(--blue800)">语法 45 + AI 45</span></div>
+    <div class="half a"><div class="label">上半场<span class="min">45 分钟</span></div><div class="body">
+      <b>函数与模块</b>
+      <p>def 定义函数（参数/返回值）、为什么要打包成函数；import 引入现成模块（statistics 统计）。<br>讲 20 + 跟练 20 + 测 5。产出：把热词统计器改写成 <code>count_words(text)</code> 函数。</p>
+    </div></div>
+    <div class="half b"><div class="label">下半场<span class="min">45 分钟</span></div><div class="body">
+      <b>AI 是什么 + 首跑体验</b>
+      <p>机器学习与"写死规则"的区别（用审核稿件的例子）；第一次运行现成中文情感分析模型，给 5 条标题打分。<br>理论 20 + 实操 20 + 小结 5。</p>
+    </div></div>
+  </div>
+
+  <div class="session">
+    <div class="session-head"><span>第 2 次课 · 文本清洗 + 文字变数字</span><span class="tag" style="background:var(--teal50);color:var(--teal800)">语法 45 + AI 45</span></div>
+    <div class="half a"><div class="label">上半场<span class="min">45 分钟</span></div><div class="body">
+      <b>正则表达式与 CSV</b>
+      <p>re 模块去掉标点/网址等杂质（清洗语料 = AI 时代的"采访核实"）；CSV 表格读写。<br>讲 20 + 跟练 20 + 测 5。产出：把脏文本清成干净词表。</p>
+    </div></div>
+    <div class="half b"><div class="label">下半场<span class="min">45 分钟</span></div><div class="body">
+      <b>文字如何变成数字（词袋模型）</b>
+      <p>电脑只认识数字；词袋模型把句子变成"词数表格"；用纯 Python 实现迷你词袋。<br>理论 20 + 实操 20 + 小结 5。</p>
+    </div></div>
+  </div>
+
+  <div class="session">
+    <div class="session-head"><span>第 3 次课 · 类与异常 + 情感分析实战</span><span class="tag" style="background:var(--purple50);color:var(--purple800)">语法 45 + AI 45</span></div>
+    <div class="half a"><div class="label">上半场<span class="min">45 分钟</span></div><div class="body">
+      <b>类与对象入门 + 异常处理</b>
+      <p>class 最小必要知识（属性/方法，能看懂第三方库用法即可）；try/except 让程序遇到脏数据不崩溃。<br>讲 20 + 跟练 20 + 测 5。</p>
+    </div></div>
+    <div class="half b"><div class="label">下半场<span class="min">45 分钟</span></div><div class="body">
+      <b>情感分析实战</b>
+      <p>词典法（查积极/消极词表打分）vs 机器学习法（从标注数据学）；用 SnowNLP 给一批新闻标题打分，排出"最正面/最负面"标题。<br>理论 15 + 实操 25 + 小结 5。</p>
+    </div></div>
+  </div>
+
+  <div class="session">
+    <div class="session-head"><span>第 4 次课 · 语法收尾 + 文本分类与结业</span><span class="tag" style="background:var(--amber50);color:var(--amber600)">语法 45 + AI 45</span></div>
+    <div class="half a"><div class="label">上半场<span class="min">45 分钟</span></div><div class="body">
+      <b>语法收尾三件套</b>
+      <p>列表推导式、sorted 排序、collections.Counter（数词神器）。<br>讲 15 + 跟练 25 + 测 5。</p>
+    </div></div>
+    <div class="half b"><div class="label">下半场<span class="min">45 分钟</span></div><div class="body">
+      <b>文本分类实战 + 结业项目</b>
+      <p>朴素贝叶斯思想（用"含'中奖'的更可能是垃圾短信"的直觉讲，不上数学）；scikit-learn 跑小型新闻分类模型；结业：串起"读入 → 清洗 → 情感打分 → 类别预测"完整流水线。<br>理论 15 + 实操 25 + 结业 5。</p>
+    </div></div>
+  </div>
+
+  <h2>八个概念，八份学习资料</h2>
+  <p class="lead">每个半场对应一份学习资料（HTML），可独立学习、也可按顺序串读。<b>入口是目录页</b>：</p>
+  <div class="links">
+    <a href="学习资料/index.html"><div class="n">总目录</div><div class="t">学习资料目录页</div><div class="d">八个概念的导航与关联图</div></a>
+  </div>
+
+  <h2>权威来源</h2>
+  <table>
+    <tr><th>阶段</th><th>依据</th></tr>
+    <tr><td>Python 语法部分</td><td>Python 官方中文教程 docs.python.org/zh-cn/3/tutorial/（函数、模块、re、CSV、类、异常、数据结构各章）</td></tr>
+    <tr><td>AI 理论部分</td><td>scikit-learn 官方用户指南 scikit-learn.org（文本特征提取、朴素贝叶斯分类）</td></tr>
+    <tr><td>中文情感分析</td><td>SnowNLP 开源项目文档 github.com/isnowfy/snownlp</td></tr>
+  </table>
+
+  <h2>环境准备</h2>
+  <table>
+    <tr><th>项目</th><th>状态</th></tr>
+    <tr><td>Python 3.12.10</td><td>已安装（桌面有 "Python 3.12.bat" 快捷启动）</td></tr>
+    <tr><td>pip 国内源（清华）</td><td>已配置并实测可用</td></tr>
+    <tr><td>AI 相关库</td><td>第 1 次课开始前安装：<code>pip install snownlp scikit-learn jieba</code></td></tr>
+  </table>
+
+  <p class="meta">步文萱（Sissi547）· 大数据与人工智能 · 学习地图 · 生成日期 2026-09-20</p>
+</div>
+</body>
+</html>

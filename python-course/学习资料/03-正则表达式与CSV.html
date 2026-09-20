@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料 03 · 正则表达式与 CSV</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:34px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:25px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:640px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:20px 24px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14.5px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:#534AB7;font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+a{color:var(--blue600)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">学习资料 03 · 第 2 次课 上半场 · 概念：正则表达式与 CSV（文本清洗）</div>
+  <h1>正则与 CSV：<br>下锅之前，先把菜洗干净</h1>
+  <p class="lead">上一场你已经让模型给标题打分了。但从网页、微信里复制来的稿子带着标点和网址——它们会让统计结果碎成一片。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>为什么学：同一个词，被标点拆成四种写法</div>
+    <div class="t">5-20 min</div><div>讲解：re.sub 去杂质、re.findall 找词、csv 读写</div>
+    <div class="t">20-38 min</div><div>跟练：把带标点和网址的稿子洗成干净词表</div>
+    <div class="t">38-45 min</div><div>测验：4 道小题 + 小结</div>
+  </div>
+  <p class="meta">依据 Python 官方中文教程「5.7 正则表达式」与「7.2 读写 CSV 文件」· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">为什么学 · 5 分钟</div>
+  <h2>不洗数据，统计就白做</h2>
+  <p class="lead">你从群里复制了一条稿子，直接统计词频，结果是：</p>
+  <div class="codeblock">text = <span class="str">"暴雨突袭！城区积水，暴雨导致交通中断。详情见 https://news.example.com/a1"</span>
+<span class="kw">print</span>(text.split())
+<span class="out">['暴雨突袭！城区积水，暴雨导致交通中断。详情见', 'https://news.example.com/a1']</span></div>
+  <div class="quote">"暴雨"明明出现两次，机器一次也没数对：<b style="color:var(--ink)">它没有"词"的概念，只认空格</b>。标点粘在词上、网址混在里面，统计结果就是一团乱麻。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">生活类比 · 3 分钟</div>
+  <h2>洗数据 = 做菜前的择菜、洗菜</h2>
+  <div class="grid2">
+    <div class="card"><b>不洗就下锅</b><p style="font-size:15px;color:var(--muted)">带着泥、烂叶、草绳一起炒。菜是炒熟了，但你没法吃——统计也是一样，词算出来了，但算的是"暴雨突袭！城区积水，"。</p></div>
+    <div class="card"><b>先洗再下锅</b><p style="font-size:15px;color:var(--muted)">择掉烂叶、冲掉泥沙、切掉根部，留下的都是能吃的部分。洗完之后，后面每一步都省心。</p></div>
+  </div>
+  <div class="big-idea">AI 的效果，一大半在这道"洗菜"工序上</div>
+  <p class="lead">所以行业里有句老话：<b>垃圾进，垃圾出</b>。数据没洗干净，再好的模型也白搭。</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心一 · 6 分钟</div>
+  <h2>re.sub：按"模式"把杂质换掉</h2>
+  <div class="term"><div class="name">正则表达式</div><div class="desc">大白话：<b>一个"描述文字长相"的模板</b>。官方教程 5.7 节的说法是"用来匹配字符串的简单工具"。比如"\d"表示一个数字，\S+ 表示一串没空格的字符。</div></div>
+  <div class="term"><div class="name">re.sub</div><div class="desc">sub 是 substitute（替换）的缩写。写法：<b>re.sub(模式串, 换成什么, 原字符串)</b>。把匹配到的部分换掉，<b>变成"什么都没有"就直接写空字符串 ""</b>，等于删除。</div></div>
+  <div class="codeblock"><span class="kw">import</span> re
+
+text = <span class="str">"暴雨突袭！城区积水，详情见 https://news.example.com/a1 。"</span>
+
+clean = re.sub(<span class="str">r"https?://\S+"</span>, <span class="str">""</span>, text)   <span class="cm"># 删掉网址</span>
+clean = re.sub(<span class="str">r"[，。！？、；：（）《》]"</span>, <span class="str">""</span>, clean)  <span class="cm"># 删掉中文标点</span>
+<span class="kw">print</span>(clean)
+<span class="out">暴雨突袭城区积水详情见</span>
+<span class="kw">print</span>(text)
+<span class="out">暴雨突袭！城区积水，详情见 https://news.example.com/a1 。</span></div>
+  <div class="quote">注意最后两行：<b style="color:var(--ink)">re.sub 不修改原字符串，它返回一个新字符串</b>。所以必须写 <code>clean = re.sub(...)</code>，光写一行 re.sub 是白洗的。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心二 · 6 分钟</div>
+  <h2>re.findall：把符合长相的都捞出来</h2>
+  <div class="term"><div class="name">re.findall</div><div class="desc">find all（找出全部）。写法：<b>re.findall(模式串, 原字符串)</b>，返回一个<b>列表</b>，里面是所有匹配到的字符串。上面用完 sub 去杂质，这里负责把有用的捞出来。</div></div>
+  <div class="codeblock">text = <span class="str">"暴雨突袭，城区积水。暴雨导致交通中断，市民出行受阻。"</span>
+
+<span class="cm"># [\u4e00-\u9fa5] 表示一个汉字，{2,} 表示连续 2 个及以上</span>
+words = re.findall(<span class="str">r"[\u4e00-\u9fa5]{2,}"</span>, text)
+<span class="kw">print</span>(words)
+<span class="out">['暴雨突袭', '城区积水', '暴雨导致交通中断', '市民出行受阻']</span></div>
+  <div class="quote"><b style="color:var(--ink)">sub 是"改"，findall 是"找"</b>——这是新手最容易混的一对。只想去掉杂质，用 sub；想拿到一个列表，用 findall。（更细的中文分词，等第 06 份资料用 SnowNLP 来做。）</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">核心三 · 6 分钟</div>
+  <h2>csv：把结果存成表格文件</h2>
+  <div class="term"><div class="name">import csv</div><div class="desc">Python 自带的表格工具箱，官方教程 7.2 节。csv.reader 一行行<b>读</b>（每行是个列表），csv.writer 一行行<b>写</b>。不用装任何东西。</div></div>
+  <div class="codeblock"><span class="kw">import</span> csv
+
+rows = [[<span class="str">"词"</span>, <span class="str">"次数"</span>], [<span class="str">"暴雨"</span>, <span class="kw">2</span>], [<span class="str">"积水"</span>, <span class="kw">1</span>]]
+
+<span class="cm"># 写：中文文件一定写 encoding="utf-8"，否则打开是乱码</span>
+<span class="kw">with</span> open(<span class="str">"词频.csv"</span>, <span class="str">"w"</span>, encoding=<span class="str">"utf-8"</span>, newline=<span class="str">""</span>) <span class="kw">as</span> f:
+    writer = csv.writer(f)
+    writer.writerows(rows)
+
+<span class="cm"># 读：同样要写 encoding="utf-8"</span>
+<span class="kw">with</span> open(<span class="str">"词频.csv"</span>, encoding=<span class="str">"utf-8"</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> row <span class="kw">in</span> csv.reader(f):
+        <span class="kw">print</span>(row)
+<span class="out">['词', '次数']</span>
+<span class="out">['暴雨', '2']</span></div>
+  <div class="quote">为什么写文件要加 <code>newline=""</code>？官方教程 7.2 节专门提醒过：不加的话，Windows 上写出来的 CSV 每行之间会多一个空行。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 18 分钟</div>
+  <h2>动手：把一段带网址的稿子洗成干净词表</h2>
+  <p class="lead"><b style="color:var(--ink)">敲一遍，别复制</b>。新建 <code>clean01.py</code>，边敲边看每一步 print 的变化：</p>
+  <div class="codeblock"><span class="kw">import</span> re
+<span class="kw">import</span> csv
+
+raw = <span class="str">"""校运会开幕！3000 名学生参加，详见 https://news.example.com/s1。
+本次校运会新增了夜间比赛项目，报名人数比去年增长两成。"""</span>
+
+clean = re.sub(<span class="str">r"https?://\S+"</span>, <span class="str">""</span>, raw)        <span class="cm"># 1 去网址</span>
+clean = re.sub(<span class="str">r"[，。！？、；：（）《》\n]"</span>, <span class="str">" "</span>, clean)  <span class="cm"># 2 标点换成空格</span>
+clean = re.sub(<span class="str">r"\s+"</span>, <span class="str">" "</span>, clean).strip()   <span class="cm"># 3 多余空格压成一个</span>
+<span class="kw">print</span>(clean)
+
+words = clean.split()                   <span class="cm"># 4 切成词表</span>
+<span class="kw">print</span>(len(words), words)
+
+<span class="kw">with</span> open(<span class="str">"干净词表.csv"</span>, <span class="str">"w"</span>, encoding=<span class="str">"utf-8"</span>, newline=<span class="str">""</span>) <span class="kw">as</span> f:
+    writer = csv.writer(f)
+    writer.writerow([<span class="str">"序号"</span>, <span class="str">"词"</span>])
+    <span class="kw">for</span> i, w <span class="kw">in</span> enumerate(words, <span class="kw">1</span>):
+        writer.writerow([i, w])
+<span class="kw">print</span>(<span class="str">"已写出 干净词表.csv"</span>)</div>
+  <div class="grid2" style="margin-top:8px">
+    <div class="card"><b>练习 A</b><p style="font-size:14px;color:var(--muted)">在第 2 步删掉数字，让"3000"不再出现在词表里。提示：用 re.sub 把 <code>r"\d+"</code> 换成空格。</p></div>
+    <div class="card"><b>练习 B</b><p style="font-size:14px;color:var(--muted)">把第 2 步改成用 re.findall 只捞连续 2 个以上的汉字，比较两种结果有什么不同。</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">常见坑 · 3 分钟</div>
+  <h2>新手最容易栽的三个地方</h2>
+  <div class="term"><div class="name">洗了等于没洗</div><div class="desc">写了 <code>re.sub(...)</code> 却没接住返回值。原字符串不会变，你得写 <code>clean = re.sub(...)</code>，再用 clean 做后面的处理。</div></div>
+  <div class="term"><div class="name">模式串忘写 r</div><div class="desc">反斜杠会被 Python 先当字符串处理一遍。写成 <code>r"\d+"</code>（字符串前加 r）表示"原样交给正则"，官方教程的示例也都这么写。</div></div>
+  <div class="term"><div class="name">打开是乱码</div><div class="desc">读写中文文件必须写 <code>encoding="utf-8"</code>。如果写出的 CSV 要用 Excel 直接双击打开、中文还是乱码，把编码改成 <code>utf-8-sig</code> 试试。</div></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本概念完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>一句话带走：</b><span style="color:var(--teal800)">re.sub 负责"改"（去网址、去标点），re.findall 负责"找"（捞出词表）；洗干净的词表用 csv 存成表格，读写中文文件一定记得 encoding="utf-8"。</span></p>
+  </div>
+  <p class="meta">官方出处：Python 官方中文教程「5.7 正则表达式」「7.2 读写 CSV 文件」<a href="https://docs.python.org/zh-cn/3/tutorial/">docs.python.org/zh-cn/3/tutorial/</a> · 下一份资料：04 文字变数字（词袋模型）· 返回<a href="index.html">目录页</a></p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'re.sub(r"https?://\\S+", "", text) 这一行的作用是？',
+  opts:['把 text 里的网址删掉','把 text 里的网址复制到别处','只判断 text 里有没有网址','把网址换成 "https"'],
+  a:0,
+  ex:'re.sub 是"查找并替换"：把匹配到的部分换成第二个参数。这里第二个参数是空字符串，意思是用"什么都没有"去替换，效果就是删除。想只是"看看有哪些、列成一个列表"，要用 re.findall。'},
+ {q:'想从稿子里找出所有"连续两个及以上的汉字"，应该用哪个？',
+  opts:['re.sub(r"[\\u4e00-\\u9fa5]{2,}", "", text)','re.findall(r"[\\u4e00-\\u9fa5]{2,}", text)','re.findall(r"[a-z]+", text)','csv.reader(text)'],
+  a:1,
+  ex:'findall 返回的是"所有匹配到的字符串组成的列表"，正合"列出来"的需求。选项一是 sub，它会把找到的词删掉，属于"改"而不是"找"；选项三只匹配小写英文，对中文一无所获；csv.reader 是用来读表格文件的，不负责找词。'},
+ {q:'用 csv 模块把中文统计结果写成表格文件，正确的一行是？',
+  opts:['open("结果.csv", "w")','open("结果.csv", "w", encoding="utf-8", newline="")','open("结果.csv", "r")','open("结果.csv", "wb", encoding="utf-8")'],
+  a:1,
+  ex:'写文件要用 "w"，中文要写 encoding="utf-8"，官方教程 7.2 节在配合 csv.writer 时还会加 newline=""，避免在 Windows 上每行之间多出空行。选项一是 "w" 但没指定编码，中文容易乱码；选项三是只读；选项四 "wb" 是二进制写，不允许再指定 encoding，会直接报错。'},
+ {q:'写正则时在前面加 r（例如 r"\\d+"），是为了什么？',
+  opts:['加了 r 匹配速度更快','反斜杠会被 Python 的字符串规则先解释一遍，加 r 表示原样交给正则','r 表示这一行是注释','只有加了 r 才能匹配中文'],
+  a:1,
+  ex:'字符串本身有一套转义规则（比如 \\n 表示换行）。加 r 就是"原始字符串"，反斜杠原样保留，交给正则表达式自己解释。官方教程 5.7 节的示例统一这么写。速度、注释都不是原因——注释用的是 #；匹配中文靠的是字符范围，和 r 无关。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！可以进入下一个概念了。':score>=2?'不错！错题页再翻翻。':'把跟练代码敲一遍，sub 和 findall 就分清了。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

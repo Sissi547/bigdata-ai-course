@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 第 1 课 · 初识 Python</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.7}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:36px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:26px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:620px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:22px 26px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:15px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:var(--purple600);font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">Python 四课系列 · 第 1 课 / 共 4 课</div>
+  <h1>初识 Python：<br>打出你的第一行"新闻快讯"</h1>
+  <p class="lead">零基础、新闻学专业、不需要任何编程经验。45 分钟后，你将亲手让电脑"开口说话"。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>导入：编程和新闻有什么关系？</div>
+    <div class="t">5-20 min</div><div>讲解：print、变量、注释三个概念</div>
+    <div class="t">20-35 min</div><div>跟练：三条新闻快讯代码</div>
+    <div class="t">35-42 min</div><div>测验：4 道小题，一次一道</div>
+    <div class="t">42-45 min</div><div>小结与作业</div>
+  </div>
+  <p class="meta">内容依据 Python 官方中文教程 docs.python.org/zh-cn/3/tutorial/ · 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">导入 · 5 分钟</div>
+  <h2>新闻人为什么要认识 Python？</h2>
+  <p class="lead">Python 是一门"给电脑下指令"的语言。官方教程对它的第一句介绍是：<b>"Python 是一门易学、功能强大的编程语言"</b>——注意"易学"两个字排在最前面。</p>
+  <div class="grid3" style="margin-top:14px">
+    <div class="card"><h3>📰 处理文字</h3><p style="font-size:14px;color:var(--muted)">1000 篇稿件里数某个词出现几次？电脑几秒钟搞定。</p></div>
+    <div class="card"><h3>📊 处理表格</h3><p style="font-size:14px;color:var(--muted)">发稿量统计、受访者名单筛选，不用再手动复制粘贴。</p></div>
+    <div class="card"><h3>🔁 重复的事让它做</h3><p style="font-size:14px;color:var(--muted)">凡是"按同样步骤重复 100 遍"的活儿，都适合交给程序。</p></div>
+  </div>
+  <div class="quote">本课程四大课，全部用<b style="color:var(--ink)">新闻场景</b>举例：写快讯、做邀请函、挑突发新闻、统计热词。学完你就有数据新闻的第一块砖。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念一 · 7 分钟</div>
+  <h2>print()：让电脑"开口说话"</h2>
+  <div class="term"><div class="name">print()</div><div class="desc">把括号里的内容<b>显示在屏幕上</b>。它是 Python 自带的"显示器喇叭"——你在键盘上敲，它在屏幕上喊。</div></div>
+  <div class="codeblock"><span class="kw">print</span>(<span class="str">"快讯：本市今起开通 24 小时新闻热线"</span>)
+<span class="out">快讯：本市今起开通 24 小时新闻热线</span></div>
+  <div class="quote">两个新手必看细节：① 文字必须放在<b style="color:var(--ink)">引号</b>里（单引号双引号都行，但要配对）；② 括号必须是<b style="color:var(--ink)">英文括号</b>，写成中文（）会直接报错——这是新手第一大坑。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念二 · 8 分钟</div>
+  <h2>变量：给内容起个名字</h2>
+  <div class="term"><div class="name">变量</div><div class="desc">像一个<b>贴了标签的盒子</b>：把内容放进去，以后喊标签就能取出来用。用 <b>=</b> 号把内容"装进盒子"（叫"赋值"）。</div></div>
+  <div class="codeblock">title = <span class="str">"暴雨突袭，三环多处积水"</span>   <span class="cm"># 把标题装进名叫 title 的盒子</span>
+<span class="kw">print</span>(title)                        <span class="cm"># 喊它的名字，屏幕上就会出现标题</span>
+<span class="out">暴雨突袭，三环多处积水</span></div>
+  <p class="lead" style="margin-top:12px">为什么要有变量？因为内容可以<b>换</b>：</p>
+  <div class="codeblock">title = <span class="str">"暴雨突袭，三环多处积水"</span>
+<span class="kw">print</span>(title)
+title = <span class="str">"积水已退，交通恢复"</span>      <span class="cm"># 同一个盒子，装了新内容</span>
+<span class="kw">print</span>(title)</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">变量命名规则 · 官方规定</div>
+  <h2>给盒子起名的三条规矩</h2>
+  <div class="term"><div class="name">1. 用英文</div><div class="desc">Python 的官方习惯是用<b>小写英文单词加下划线</b>，如 <span class="code">news_title</span>、<span class="code">reporter_name</span>（官方术语表称 snake_case 风格）</div></div>
+  <div class="term"><div class="name">2. 别用开头是数字</div><div class="desc"><span class="code">title1</span> 合法，<span class="code">1title</span> 非法——名字不能以数字开头</div></div>
+  <div class="term"><div class="name">3. 避开关键字</div><div class="desc"><span class="code">print</span>、<span class="code">if</span>、<span class="code">for</span> 这些是 Python 的"官方保留词"，不能拿来当名字，否则程序会"精神错乱"</div></div>
+  <div class="big-idea" style="font-size:16px">好名字标准：半年后回看，不用解释也知道里面装的什么</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念三 · 5 分钟</div>
+  <h2>注释：写给人看的"采访笔记"</h2>
+  <div class="term"><div class="name"># 注释</div><div class="desc">以 <b>#</b> 开头的行，电脑<b>完全忽略</b>，纯粹写给人看。相当于代码旁边的"编者按"。</div></div>
+  <div class="codeblock"><span class="cm"># 下面这条快讯面向全城读者发布</span>
+title = <span class="str">"热线开通首日接到来电 200 通"</span>
+<span class="kw">print</span>(title)  <span class="cm"># 打印标题</span></div>
+  <div class="quote">新闻行业讲"信源可查"，编程行业讲"注释清晰"——<b style="color:var(--ink)">好的注释就是给未来的自己（和同事）留的信源</b>。官方建议：注释要解释"为什么"，而不是重复"做了什么"。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 15 分钟</div>
+  <h2>动手：三条快讯，一段开场白</h2>
+  <p class="lead">把下面的代码在 Python 里敲一遍（别复制，敲才有手感），改改内容再运行一次：</p>
+  <div class="codeblock"><span class="cm"># 我的第一个新闻程序</span>
+station = <span class="str">"校园之声广播站"</span>
+news1 = <span class="str">"运动会下周三开幕，报名截止本周五"</span>
+news2 = <span class="str">"食堂三楼新开面档，人均 12 元"</span>
+
+<span class="kw">print</span>(<span class="str">"这里是"</span> + station)   <span class="cm"># + 号可以把两段文字接起来</span>
+<span class="kw">print</span>(news1)
+<span class="kw">print</span>(news2)</div>
+  <div class="grid2" style="margin-top:8px">
+    <div class="card"><b>练习 A</b><p style="font-size:14px;color:var(--muted)">把 station 改成你自己社团的名字，运行看变化。</p></div>
+    <div class="card"><b>练习 B（思考题）</b><p style="font-size:14px;color:var(--muted)">故意把 print 写成 Print 会怎样？——报错。Python <b>区分大小写</b>，这行报错信息读作"Print 没有定义"。以后见到红色报错，先别慌，它其实在告诉你"哪里不对劲"。</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。全部围绕本课内容。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 6 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本课完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>本课三件套：</b><span style="color:var(--teal800)">print() 负责显示，变量负责存内容（= 赋值），# 注释写给人看。作业：把跟练代码改成你自己的三条快讯，下节课要用。</span></p>
+  </div>
+  <p class="meta">官方出处：Python 官方教程第 3 章（docs.python.org/zh-cn/3/tutorial/introduction.html）· 下一课：数据类型与字符串，自动生成采访邀请函</p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'下面哪一行代码能把"突发新闻"三个字显示在屏幕上？',
+  opts:['print(突发新闻)','print("突发新闻")','Print ("突发新闻")','显示("突发新闻")'],
+  a:1,
+  ex:'文字必须放在引号里（A 错）；Python 区分大小写，print 必须全小写（C 错）；"显示"不是 Python 的指令（D 错）。'},
+ {q:'执行 title = "会议延期" 之后，title 这个"盒子"里装的是什么？',
+  opts:['title 这五个字母','会议延期','"会议延期" 这段文字','变量'],
+  a:2,
+  ex:'= 是赋值：把右边引号里的文字装进左边的盒子。以后喊 title，取出来的就是这段文字。'},
+ {q:'下面哪个变量名是符合规范的？',
+  opts:['1news','news-title','news_title','for'],
+  a:2,
+  ex:'名字不能以数字开头（A）；不能含连字符（B 是减号，会被当成减法）；for 是保留关键字（D）。小写英文加下划线是官方推荐风格。'},
+ {q:'代码里以 # 开头的那一行，作用是什么？',
+  opts:['电脑会执行它','电脑忽略它，纯写给人看','表示这一行出错','让程序加速'],
+  a:1,
+  ex:'# 是注释：电脑完全跳过，写给人看。好注释 = 给未来的自己和同事留的"信源"。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！下节课见。':score>=2?'不错！错题对应页再翻翻。':'别灰心，把跟练页再敲一遍代码。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

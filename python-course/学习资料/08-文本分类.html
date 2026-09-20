@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料 08 · 文本分类与结业项目</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --purple50:#EEEDFE; --purple600:#534AB7; --purple800:#3C3489;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:34px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:25px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:640px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:20px 24px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:#534AB7;font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.flow{display:flex;flex-direction:column}
+.flow-step{display:flex;gap:14px}
+.flow-num{width:30px;height:30px;border-radius:50%;background:var(--blue50);color:var(--blue800);font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
+.flow-body{padding:0 0 16px 16px;border-left:1.5px dashed var(--line2);margin:-6px 0 0 -15px;padding-top:6px}
+.flow-step:last-child .flow-body{border-left-color:transparent;padding-bottom:0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0}
+th,td{border:.5px solid var(--line);padding:9px 13px;text-align:left;vertical-align:top}
+th{background:var(--surface);font-weight:600}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+a{color:var(--blue600)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">学习资料 08 · 第 4 次课 下半场 · 概念：文本分类（结业）</div>
+  <h1>文本分类与结业项目：<br>让程序自己判断"这是哪类新闻"</h1>
+  <p class="lead">最后一份资料。你将理解分类器的直觉，跑出第一个自己训练的小模型，然后把八份资料学到的全部零件，串成一条完整流水线。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>为什么学：自动分稿的现实需求</div>
+    <div class="t">5-20 min</div><div>理论：朴素贝叶斯与"训练/预测"</div>
+    <div class="t">20-40 min</div><div>实操：训练一个小分类器 + 结业项目</div>
+    <div class="t">40-45 min</div><div>测验 4 题 + 结业寄语</div>
+  </div>
+  <p class="meta">依据 scikit-learn 官方用户指南（文本特征提取、朴素贝叶斯）· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">为什么学 · 5 分钟</div>
+  <h2>每天几百条来稿，谁先分好类？</h2>
+  <p class="lead">编辑部每天收到校园来稿，要分到体育、学术、生活等不同栏目。人工分要一条条看；而分类器可以做到：给一条新标题，直接告诉你"这更像体育版"。</p>
+  <div class="quote">情感分析回答"<b style="color:var(--ink)">感觉好不好</b>"；文本分类回答"<b style="color:var(--ink)">属于哪一类</b>"。两者都是把文字变成计算机能处理的东西，只是目标不同。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">理论 · 6 分钟</div>
+  <h2>朴素贝叶斯的直觉：关键词投票</h2>
+  <div class="term"><div class="name">朴素贝叶斯</div><div class="desc">一种经典分类方法。核心直觉：<b>看哪些词出现过，按"这些词在各类型里的常见程度"投票，票多的获胜。</b></div></div>
+  <div class="codeblock"><span class="str">"校运会百米决赛破纪录"</span>
+  <span class="cm">含"决赛""破纪录" → 在体育类稿件里极常见 → 投给体育</span>
+
+<span class="str">"实验室发表最新研究成果"</span>
+  <span class="cm">含"实验室""研究成果" → 在学术类里常见 → 投给学术</span></div>
+  <div class="quote">为什么叫"朴素"？因为它假设每个词之间互不相关——现实里明显不成立（"百米"和"决赛"高度相关），但这个"朴素"的假设<b style="color:var(--ink)">在文本分类上意外地好用</b>，而且快。这就是它几十年不衰的原因。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">理论 · 5 分钟</div>
+  <h2>两个动作：训练与预测</h2>
+  <div class="flow" style="margin-top:8px">
+    <div class="flow-step"><div class="flow-num">1</div><div class="flow-body"><b>训练（fit）</b><p style="font-size:15px;color:var(--muted)">把"已分好类的历史稿件"喂给程序，让它统计：体育类里各词出现频率如何、学术类又如何。</p></div></div>
+    <div class="flow-step"><div class="flow-num">2</div><div class="flow-body"><b>预测（predict）</b><p style="font-size:15px;color:var(--muted)">给它一条从没见过的新标题，它按学到的频率投票，给出类别。</p></div></div>
+    <div class="flow-step"><div class="flow-num">3</div><div class="flow-body"><b>评估（score）</b><p style="font-size:15px;color:var(--muted)">用一批"知道答案"的标题考它，算准确率——这就是模型的成绩单。</p></div></div>
+  </div>
+  <div class="quote">还记得概念 02 讲的"从数据中学规律"吗？<b style="color:var(--ink)">fit 就是"学"，predict 就是"用"，score 就是"考试"</b>——今天你亲手把这套流程跑一遍。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">实操 · 15 分钟</div>
+  <h2>动手：20 行训练一个新闻分类器</h2>
+  <p class="lead">先安装（国内源已配好）：</p>
+  <div class="codeblock">pip install scikit-learn jieba</div>
+  <div class="codeblock"><span class="kw">from</span> sklearn.feature_extraction.text <span class="kw">import</span> CountVectorizer
+<span class="kw">from</span> sklearn.naive_bayes <span class="kw">import</span> MultinomialNB
+
+<span class="cm"># ① 训练数据：已经分好类的历史稿件（越多越准，这里只是示例）</span>
+texts = [
+    <span class="str">"校运会百米决赛破纪录"</span>, <span class="str">"篮球联赛主场大胜"</span>, <span class="str">"足球队员加练体能"</span>,
+    <span class="str">"实验室发表最新研究成果"</span>, <span class="str">"学术讲座报名开始"</span>, <span class="str">"论文被国际会议录用"</span>,
+]
+labels = [<span class="str">"体育"</span>, <span class="str">"体育"</span>, <span class="str">"体育"</span>, <span class="str">"学术"</span>, <span class="str">"学术"</span>, <span class="str">"学术"</span>]
+
+<span class="cm"># ② 把文字变成数字表格（概念 04 的词袋）</span>
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(texts)
+
+<span class="cm"># ③ 训练 + 预测</span>
+model = MultinomialNB()
+model.fit(X, labels)
+
+new_titles = [<span class="str">"田径队备战下月校运会"</span>, <span class="str">"课题组获批新的科研项目"</span>]
+X_new = vectorizer.transform(new_titles)     <span class="cm"># 注意：用同一个 vectorizer</span>
+<span class="kw">for</span> t, p <span class="kw">in</span> <span class="kw">zip</span>(new_titles, model.predict(X_new)):
+    <span class="kw">print</span>(<span class="str">f"{p}  ←  {t}"</span>)</div>
+  <div class="quote">三行核心代码对应三个概念：<code>CountVectorizer</code> 是概念 04 的词袋，<code>MultinomialNB</code> 是本页的朴素贝叶斯，<code>fit / predict</code> 是训练与预测。<b style="color:var(--ink)">AI 库用起来就这么几行——难的是理解它为什么有效、以及何时会失灵</b>。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">诚实提醒 · 4 分钟</div>
+  <h2>样本太少会怎样？</h2>
+  <div class="grid2">
+    <div class="card"><b>示例只有 6 条</b><p style="font-size:15px;color:var(--muted)">它能跑通、能输出结果，但这个"模型"几乎没有实用价值——数据太少，规律学不到。<b style="color:var(--ink)">跑通 ≠ 可用</b>。</p></div>
+    <div class="card"><b>要多少才像样？</b><p style="font-size:15px;color:var(--muted)">真实项目通常是每类几百到几千条，还要留一部分数据专门用来"考试"（评估准确率），不能拿训练数据自夸。</p></div>
+  </div>
+  <div class="quote">这是本课程最重要的一条职业素养：<b style="color:var(--ink)">任何模型结果都要说明数据来源与样本量，并保留人工复核</b>。这和新闻"信源核实"是同一种严谨。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">结业项目 · 10 分钟</div>
+  <h2>串起全部八份资料的完整流水线</h2>
+  <table>
+    <tr><th>环节</th><th>用什么</th><th>来自哪份资料</th></tr>
+    <tr><td>读入稿件</td><td><code>open(..., encoding="utf-8")</code></td><td>前置第 4 课</td></tr>
+    <tr><td>清洗文本</td><td><code>re.sub</code> 去标点与网址</td><td>概念 03</td></tr>
+    <tr><td>分词与计数</td><td><code>jieba</code> 分词、<code>Counter</code></td><td>概念 04 / 07</td></tr>
+    <tr><td>情感打分</td><td><code>SnowNLP(t).sentiments</code></td><td>概念 06</td></tr>
+    <tr><td>类别预测</td><td><code>CountVectorizer</code> + <code>MultinomialNB</code></td><td>概念 08</td></tr>
+    <tr><td>输出榜单</td><td><code>sorted</code> / 推导式</td><td>概念 07</td></tr>
+    <tr><td>错误处理</td><td><code>try / except</code></td><td>概念 05</td></tr>
+    <tr><td>封装复用</td><td><code>def</code> 函数</td><td>概念 01</td></tr>
+  </table>
+  <div class="big-idea" style="font-size:16px">结业标准：能独立向别人讲清这条流水线的每一环，并说明每步的局限</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>结业测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">全课程完结</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>毕业寄语：</b><span style="color:var(--teal800)">文本分类解决"属于哪一类"，情感分析解决"感觉好不好"；fit 是学、predict 是用、score 是考。八份资料合成一条流水线——你已经具备数据新闻的完整起手式。记得：模型是助手，判断力仍是记者的。</span></p>
+  </div>
+  <p class="meta">官方出处：scikit-learn 官方文档（feature_extraction.text / naive_bayes）scikit-learn.org · 返回<a href="index.html">目录页</a> · 返回<a href="../学习地图.html">学习地图</a></p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'情感分析和文本分类的目标有什么不同？',
+  opts:['完全一样','前者判断"感觉好不好"（打分），后者判断"属于哪一类"（归类）','前者用中文，后者用英文','前者需要 GPU，后者不需要'],
+  a:1,
+  ex:'两者都把文字变成计算机能处理的形式，但目标不同：情感分析输出 0~1 的分数，文本分类输出类别标签，例如体育/学术/生活。'},
+ {q:'朴素贝叶斯做文本分类的核心直觉是？',
+  opts:['随机猜一个类别','看哪些词出现了，按这些词在各类型中的常见程度投票，票多者胜','把人写的规则一条条写死','比较文章长度'],
+  a:1,
+  ex:'它假设词之间互不相关（所以叫"朴素"），靠关键词出现情况投票。这个假设在现实中不成立，但在文本分类上意外地好用且快。'},
+ {q:'model.fit(X, labels) 和 model.predict(X_new) 分别对应什么？',
+  opts:['预测、训练','训练（学规律）、预测（用规律）','都是训练','都是预测'],
+  a:1,
+  ex:'fit 是把带答案的数据喂进去学规律；predict 是拿新数据来用规律。评估准确率用 score，相当于"考试"。'},
+ {q:'用 6 条数据训练出的分类器能跑通，这说明什么？',
+  opts:['模型已经可用，可以直接用于实际分稿','只是跑通了流程，数据太少规律学不到，不具备实用价值','准确率一定有 100%','不需要人工复核'],
+  a:1,
+  ex:'跑通不等于可用。真实项目每类通常需要几百到几千条样本，并留出独立数据评估准确率。任何模型结果都要说明数据来源与样本量，并保留人工复核。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='结业测验 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分结业！八份资料全部完成。':score>=2?'不错！结业项目记得动手做一遍。':'把实操代码跑一遍，再回来测一次。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学习资料 06 · 情感分析</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56; --teal800:#085041;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.75}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:34px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:25px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:640px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:20px 24px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:14.5px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:#534AB7;font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.bar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin:12px 0;font-size:12px;color:#fff;font-weight:600}
+.bar div{display:flex;align-items:center;justify-content:center}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+a{color:var(--blue600)}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">学习资料 06 · 第 3 次课 下半场 · 概念：情感分析</div>
+  <h1>情感分析：<br>让程序判断一条标题是"喜"还是"忧"</h1>
+  <p class="lead">这是你的第一个真正的 AI 应用：给它一段文字，它回你一个 0 到 1 之间的分数，越接近 1 越正面。你将知道它背后两种完全不同的做法。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>为什么学：编辑部为什么需要它</div>
+    <div class="t">5-20 min</div><div>理论：词典法 vs 机器学习法</div>
+    <div class="t">20-40 min</div><div>实操：给一批标题打分并排名</div>
+    <div class="t">40-45 min</div><div>测验 4 题 + 小结</div>
+  </div>
+  <p class="meta">依据 SnowNLP 开源项目文档（github.com/isnowfy/snownlp）· 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">为什么学 · 5 分钟</div>
+  <h2>一千条标题，人手看不过来</h2>
+  <p class="lead">月底复盘时，主编想知道：这个月我们的报道整体情绪是偏正面还是偏负面？哪几条标题最负面、需要检讨？</p>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card"><b>人工做法</b><p style="font-size:15px;color:var(--muted)">一条条读、一条条感受，一千条要看几个小时，而且两个人标准还不一样。</p></div>
+    <div class="card"><b>程序做法</b><p style="font-size:15px;color:var(--muted)">一个循环跑完，每条给出 0~1 的分数，几秒钟出结果，还能自动排序。</p></div>
+  </div>
+  <div class="quote">这就是情感分析的用途：<b style="color:var(--ink)">把"读起来什么感觉"变成"一个可以排序的数字"</b>。数字才好比较、好统计、好画图。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">理论一 · 7 分钟</div>
+  <h2>做法 A：词典法（查字典打分）</h2>
+  <div class="term"><div class="name">词典法</div><div class="desc">事先准备一份"褒义词 / 贬义词"词表，看句子里各出现几个，按比例算分。像老师批作文数好词好句。</div></div>
+  <div class="codeblock"><span class="str">"圆满落幕，掌声不断"</span>   <span class="cm">→ 褒义词 2 个，贬义词 0 个  → 分数高（正面）</span>
+<span class="str">"暴雨突袭，多处积水"</span>     <span class="cm">→ 褒义词 0 个，贬义词 2 个  → 分数低（负面）</span></div>
+  <div class="quote"><b style="color:var(--ink)">优点</b>：简单、快、结果可解释（能告诉你为什么扣分）。<br><b style="color:var(--ink)">缺点</b>：词表里没有的词就抓瞎；反话、否定句容易判错，比如"不是很满意"。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">理论二 · 6 分钟</div>
+  <h2>做法 B：机器学习法（从例子中学）</h2>
+  <div class="term"><div class="name">机器学习法</div><div class="desc">不查表，而是给模型看<b>大量已经标注好</b>的句子（这条是正面、那条是负面），让它自己总结规律。像带实习生看一千篇稿子，看多了自然有感觉。</div></div>
+  <div class="codeblock"><span class="cm">训练阶段：</span>喂入 <span class="kw">10 万</span>条已标注文本 → 模型自己找规律
+<span class="cm">预测阶段：</span>给一条新标题 → 模型根据学到的规律给出分数</div>
+  <div class="quote"><b style="color:var(--ink)">优点</b>：能处理没见过的表达、更贴近真实语言。<br><b style="color:var(--ink)">缺点</b>：需要标注数据；分数怎么来的不那么直观（"黑箱"感）。</div>
+  <div class="big-idea" style="font-size:16px">课程用的 SnowNLP，属于"在标注语料上训练过的模型"，用起来像词典法一样简单</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">实操 · 20 分钟</div>
+  <h2>动手：给 8 条标题打分并排名</h2>
+  <div class="codeblock"><span class="kw">from</span> snownlp <span class="kw">import</span> SnowNLP
+
+titles = [
+    <span class="str">"暴雨突袭，三环多处积水，市民出行受阻"</span>,
+    <span class="str">"校园歌手大赛圆满落幕，掌声不断"</span>,
+    <span class="str">"图书馆延长开放时间，同学纷纷点赞"</span>,
+    <span class="str">"食堂被曝使用过期食材，校方致歉"</span>,
+    <span class="str">"运动会开幕式精彩纷呈"</span>,
+]
+
+results = []                          <span class="cm"># 收结果：每条存成 (分数, 标题)</span>
+<span class="kw">for</span> t <span class="kw">in</span> titles:
+    <span class="kw">try</span>:
+        score = SnowNLP(t).sentiments  <span class="cm"># 属性：读情感分（不带括号）</span>
+        results.append((score, t))
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="kw">print</span>(<span class="str">f"跳过：{e}"</span>)
+
+results.sort()                        <span class="cm"># 从小到大排：最负面的在前</span>
+<span class="kw">print</span>(<span class="str">"— 最负面 3 条 —"</span>)
+<span class="kw">for</span> s, t <span class="kw">in</span> results[:<span class="kw">3</span>]:
+    <span class="kw">print</span>(<span class="str">f"{s:.2f}  {t}"</span>)</div>
+  <div class="quote">四个知识点全在这里：函数与模块（import）、列表与循环（第 3 课）、类与对象（读属性）、异常处理（try）。<b style="color:var(--ink)">AI 应用就是基础语法的组合</b>。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">看结果 · 5 分钟</div>
+  <h2>怎么读这个分数？</h2>
+  <div class="bar">
+    <div style="background:var(--red600);flex:1">0.0 很负面</div>
+    <div style="background:var(--amber600);flex:1">0.5 中性</div>
+    <div style="background:var(--green600);flex:1">1.0 很正面</div>
+  </div>
+  <div class="quote"><b style="color:var(--ink)">三个必须知道的注意点</b>：<br>① 分数只反映"用词倾向"，不等于新闻价值判断——负面新闻不等于坏新闻；<br>② 反话、否定句可能判错（"不是很满意"）；<br>③ 任何模型都有误差，<b>人工复核永远必要</b>——这是数据新闻的职业底线。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 8 分钟</div>
+  <h2>两个练习</h2>
+  <div class="grid2">
+    <div class="card"><b>练习 A｜做自己的榜单</b><p style="font-size:15px;color:var(--muted)">把你最近看到的 10 条真实新闻标题放进去，跑出"最正面 / 最负面"各 3 条，看看机器判断和你的直觉是否一致。不一致的，想想是反话还是模型没学过的词。</p></div>
+    <div class="card"><b>练习 B｜平均值</b><p style="font-size:15px;color:var(--muted)">算出这 10 条标题的平均分，作为"本月报道基调"的一个粗略指标。提示：用第 1 次课学的 statistics 模块，或把分数列表加起来除以条数。</p></div>
+  </div>
+  <div class="quote">写数据分析小结时，请照新闻规范注明：<b style="color:var(--ink)">数据来源、样本量、工具与已知局限</b>——这是你区别于"随便跑个模型"的地方。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本概念完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>一句话带走：</b><span style="color:var(--teal800)">情感分析 = 把"读起来什么感觉"变成可排序的数字。词典法查表、机器学习法从标注数据学；分数只有参考价值，人工复核是职业底线。</span></p>
+  </div>
+  <p class="meta">官方出处：SnowNLP 项目文档 github.com/isnowfy/snownlp · 下一份资料：07 语法收尾 · 返回<a href="index.html">目录页</a></p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'词典法情感分析的核心做法是什么？',
+  opts:['让模型自己从数据中学规律','事先准备褒义/贬义词表，数句子里各出现几个再算分','把句子翻译成英文再判断','随机给一个分数'],
+  a:1,
+  ex:'词典法是"查表打分"：词表里有的词才算数，所以简单可解释，但遇到表外词或反话容易判错。'},
+ {q:'机器学习法情感分析和词典法最大的区别是？',
+  opts:['不需要任何数据','从大量已标注的例子里自己总结规律','运行速度一定更快','只能处理英文'],
+  a:1,
+  ex:'机器学习法靠"看过大量标注样本"来学规律，能处理没见过的表达，但需要标注数据，且判断过程不如查表直观。'},
+ {q:'SnowNLP(t).sentiments 后面为什么不能加括号？',
+  opts:['加了会变快','sentiments 是属性（资料），不是方法（动作）','Python 不允许括号','加了会变成字符串'],
+  a:1,
+  ex:'这是"带括号是动作、不带括号是资料"这条铁律的应用：sentiments 是读取出来的属性值，加括号会报 TypeError。'},
+ {q:'关于情感分析的使用，下面哪种态度最专业？',
+  opts:['模型分数就是事实，直接写进报道','分数只反映用词倾向，需结合语境并人工复核，且注明方法与局限','把最负面的一律删掉','只在标题上跑，不做任何说明'],
+  a:1,
+  ex:'模型分数是参考指标，不等于价值判断；存在反话、否定句等误差。数据新闻应注明数据来源、样本量、工具与已知局限，并保留人工复核。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！情感分析你已经拿下了。':score>=2?'不错！错题页再翻翻。':'把实操代码跑一遍，比读十遍都管用。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 第 3 课 · 列表、判断与循环</title>
+<style>
+:root{
+  --ink:#2C2C2A; --muted:#5F5E5A; --faint:#888780;
+  --line:rgba(44,44,42,.15); --line2:rgba(44,44,42,.3);
+  --blue50:#E6F1FB; --blue600:#185FA5; --blue800:#0C447C;
+  --teal50:#E1F5EE; --teal600:#0F6E56;
+  --amber50:#FAEEDA; --amber600:#854F0B;
+  --red50:#FCEBEB; --red600:#A32D2D;
+  --green50:#EAF3DE; --green600:#3B6D11;
+  --surface:#F6F5F1; --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;background:#fff;color:var(--ink);font-size:16px;line-height:1.7}
+.deck{max-width:860px;margin:0 auto;padding:24px 20px 90px}
+.slide{display:none;animation:fade .35s ease}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kicker{font-size:13px;letter-spacing:.1em;color:var(--blue600);font-weight:600;margin-bottom:12px}
+h1{font-size:36px;font-weight:700;line-height:1.35;margin-bottom:14px}
+h2{font-size:26px;font-weight:700;margin-bottom:16px}
+.lead{font-size:17px;color:var(--muted);max-width:620px}
+.card{background:#fff;border:.5px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.chip{display:inline-block;font-size:13px;padding:4px 12px;border-radius:999px;margin:0 6px 8px 0;font-weight:600}
+.meta{font-size:13px;color:var(--faint);margin-top:24px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.big-idea{background:var(--blue50);border-radius:var(--r);padding:22px 26px;font-size:18px;font-weight:600;color:var(--blue800);text-align:center;margin:14px 0}
+.quote{border-left:3px solid var(--blue600);padding:6px 0 6px 16px;color:var(--muted);margin:14px 0;font-size:15px}
+.codeblock{font-family:ui-monospace,Consolas,monospace;font-size:15px;background:var(--surface);border-radius:10px;padding:16px 20px;line-height:1.8;overflow-x:auto;white-space:pre;margin:12px 0}
+.codeblock .cm{color:var(--faint)}
+.codeblock .str{color:var(--teal600)}
+.codeblock .kw{color:var(--purple600);font-weight:600}
+.codeblock .out{color:var(--faint)}
+.codeblock .out::before{content:"输出 ▸ ";color:var(--amber600);font-family:"PingFang SC",sans-serif;font-size:12px}
+.term{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:12px}
+.term .name{background:var(--blue50);color:var(--blue800);border-radius:8px;padding:8px 12px;font-weight:700;text-align:center;font-size:15px}
+.term .desc{font-size:15px}
+.agenda{display:grid;grid-template-columns:80px 1fr;gap:10px 16px;margin-top:14px}
+.agenda .t{color:var(--blue600);font-weight:700;text-align:right;font-size:15px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);border-top:.5px solid var(--line);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;max-width:860px;margin:0 auto;z-index:5}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line2);cursor:pointer;padding:0}
+.dots button.on{background:var(--blue600)}
+.btn{border:.5px solid var(--line2);background:#fff;border-radius:8px;padding:8px 18px;font-size:14px;cursor:pointer;color:var(--ink);font-family:inherit}
+.btn:hover{border-color:var(--blue600);color:var(--blue600)}
+.btn.primary{background:var(--blue800);color:#fff;border-color:var(--blue800)}
+.btn.primary:hover{background:var(--blue600);color:#fff}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.opt{display:block;width:100%;text-align:left;border:.5px solid var(--line2);background:#fff;border-radius:10px;padding:13px 16px;font-size:15px;cursor:pointer;margin-bottom:10px;font-family:inherit;color:var(--ink)}
+.opt:hover:not(:disabled){border-color:var(--blue600)}
+.opt.correct{background:var(--green50);border-color:var(--green600);color:var(--green600);font-weight:600}
+.opt.wrong{background:var(--red50);border-color:var(--red600);color:var(--red600)}
+.opt:disabled{cursor:default;opacity:.9}
+.explain{display:none;background:var(--surface);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--muted);margin-top:4px}
+.explain.show{display:block}
+.qtag{font-size:12px;color:var(--faint);letter-spacing:.08em;margin-bottom:6px}
+.progress-num{font-size:13px;color:var(--faint)}
+.score-big{font-size:52px;font-weight:700;color:var(--blue800);margin:8px 0}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<section class="slide active">
+  <div class="kicker">Python 四课系列 · 第 3 课 / 共 4 课</div>
+  <h1>列表、判断与循环：<br>从 100 条标题里挑出突发新闻</h1>
+  <p class="lead">一条数据不够用了。这节课让电脑学会三件事：装一串东西（列表）、做选择（if）、重复干活（for）。</p>
+  <div class="agenda">
+    <div class="t">0-5 min</div><div>回顾 + 导入：人肉挑新闻的痛</div>
+    <div class="t">5-30 min</div><div>讲解：列表 → if → for → 字典</div>
+    <div class="t">30-38 min</div><div>跟练：突发新闻筛选器</div>
+    <div class="t">38-43 min</div><div>测验：4 道小题</div>
+    <div class="t">43-45 min</div><div>小结与作业</div>
+  </div>
+  <p class="meta">内容依据 Python 官方中文教程第 3、4 章 · 方向键翻页</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念一 · 8 分钟</div>
+  <h2>列表：一个盒子装一串东西</h2>
+  <div class="term"><div class="name">列表 list</div><div class="desc">用<b>方括号 [ ]</b> 把一串内容按顺序装在一起，用<b>逗号</b>隔开。官方教程说它是"最常用的数据结构"。</div></div>
+  <div class="codeblock">titles = [<span class="str">"运动会开幕"</span>, <span class="str">"食堂新面档"</span>, <span class="str">"图书馆延长开放"</span>]
+<span class="kw">print</span>(titles[<span class="kw">0</span>])     <span class="cm"># 按序号取，注意：序号从 0 开始！</span>
+<span class="out">运动会开幕</span>
+<span class="kw">print</span>(<span class="kw">len</span>(titles))  <span class="cm"># len() 数一共有几条</span>
+<span class="out">3</span></div>
+  <div class="quote"><b style="color:var(--ink)">最重要的细节</b>：序号从 <b>0</b> 开始——第 1 条是 titles[0]，第 2 条是 titles[1]。全世界新手都在这里栽过跟头，你现在栽过一次就等于免疫了。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念二 · 7 分钟</div>
+  <h2>if：让程序学会"判断"</h2>
+  <div class="term"><div class="name">if 判断</div><div class="desc">如果条件成立（True）就执行下面缩进的代码，否则跳过。相当于编辑对稿子说："符合标准就发，不符合毙掉。"</div></div>
+  <div class="codeblock">views = <span class="kw">5000</span>
+<span class="kw">if</span> views > <span class="kw">1000</span>:
+    <span class="kw">print</span>(<span class="str">"头条候选！"</span>)
+<span class="out">头条候选！</span></div>
+  <div class="quote">两个要点：① 条件后面有个<b style="color:var(--ink)">冒号 :</b>；② 下面要执行的行必须<b style="color:var(--ink)">缩进 4 个空格</b>——缩进不是排版喜好，是 Python 的语法本身。判断符号：> 大于、&lt; 小于、== 等于（两个等号！一个等号是赋值）。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念三 · 8 分钟</div>
+  <h2>for：让电脑"逐条过稿"</h2>
+  <div class="term"><div class="name">for 循环</div><div class="desc">对列表里的每一项，各执行一次缩进里的代码。"for x in 列表" 读作："对列表里的每个 x"。</div></div>
+  <div class="codeblock"><span class="kw">for</span> t <span class="kw">in</span> titles:
+    <span class="kw">print</span>(<span class="kw">f</span><span class="str">"待编：{t}"</span>)
+<span class="out">待编：运动会开幕</span>
+<span class="out">待编：食堂新面档</span>
+<span class="out">待编：图书馆延长开放</span></div>
+  <div class="quote">对比一下：没有循环，100 条标题要写 100 行 print；有了循环，<b style="color:var(--ink)">3 行代码处理任意多条</b>。这就是"会编程的人"和"人肉处理"的差距。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">合体 · 6 分钟</div>
+  <h2>if + for：筛选器诞生</h2>
+  <div class="codeblock">titles = [<span class="str">"运动会开幕"</span>, <span class="str">"突发：教学楼消防演习"</span>, <span class="str">"食堂新面档"</span>, <span class="str">"突发：临时停水通知"</span>]
+
+<span class="kw">for</span> t <span class="kw">in</span> titles:          <span class="cm"># 逐条过</span>
+    <span class="kw">if</span> <span class="str">"突发"</span> <span class="kw">in</span> t:      <span class="cm"># 含"突发"二字吗？in 也能查"在不在里面"</span>
+        <span class="kw">print</span>(<span class="kw">f</span><span class="str">"🔴 加急：{t}"</span>)
+<span class="out">🔴 加急：突发：教学楼消防演习</span>
+<span class="out">🔴 加急：突发：临时停水通知</span></div>
+  <div class="quote">4 行代码，从一串标题里自动挑出加急稿件——<b style="color:var(--ink)">这就是第 1 课说的"重复的事交给程序"</b>。下一个问题：能不能顺便统计每种词出现了几次？这就需要一个新盒子。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">概念四 · 6 分钟</div>
+  <h2>字典：自带"标签"的收纳柜</h2>
+  <div class="term"><div class="name">字典 dict</div><div class="desc">用<b>花括号 { }</b> 装"标签: 内容"对儿。不看序号，看标签取物。</div></div>
+  <div class="codeblock">word_count = {<span class="str">"暴雨"</span>: <span class="kw">3</span>, <span class="str">"开学"</span>: <span class="kw">5</span>}
+<span class="kw">print</span>(word_count[<span class="str">"开学"</span>])
+<span class="out">5</span>
+word_count[<span class="str">" hotline"</span>] = word_count[<span class="str">"hotline"</span>] + <span class="kw">1</span>  <span class="cm"># 标签在就 +1</span></div>
+  <div class="quote">词典结构 + 循环 + 判断 = <b style="color:var(--ink)">词频统计</b>。第 4 课我们将把这三样合起来，写出你第一个真正的数据新闻小工具。本课先记住：字典用标签存数，能"查"也能"加"。</div>
+</section>
+
+<section class="slide">
+  <div class="kicker">跟练 · 8 分钟</div>
+  <h2>动手：突发新闻筛选器 + 计数</h2>
+  <div class="codeblock">titles = [<span class="str">"突发：教学楼消防演习"</span>, <span class="str">"运动会开幕"</span>, <span class="str">"突发：临时停水"</span>, <span class="str">"社团招新"</span>]
+
+total = <span class="kw">0</span>                      <span class="cm"># 计数器清零</span>
+<span class="kw">for</span> t <span class="kw">in</span> titles:
+    <span class="kw">if</span> <span class="str">"突发"</span> <span class="kw">in</span> t:
+        total = total + <span class="kw">1</span>     <span class="cm"># 每发现一条，计数器 +1</span>
+        <span class="kw">print</span>(t)
+
+<span class="kw">print</span>(<span class="kw">f</span><span class="str">"共发现 {total} 条突发新闻"</span>)</div>
+  <p class="lead">练习：往 titles 里再加 3 条自己的标题（其中 1 条含"突发"），预测输出几条、计数是多少，再运行验证。<b>先猜后跑</b>是程序员最重要的练习方式。</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">课后练习 · 共 4 题</div>
+  <h2>小测验</h2>
+  <p class="lead">一次一道，选完立刻反馈。</p>
+  <div class="card" style="margin-top:20px;text-align:center;padding:36px">
+    <div class="score-big" style="font-size:40px">4 道题</div>
+    <p style="color:var(--muted);font-size:14px">约 5 分钟</p>
+    <button class="btn primary" style="margin-top:20px;padding:10px 34px" onclick="startQuiz()">开始答题</button>
+  </div>
+</section>
+
+<section class="slide" id="quizSlide">
+  <div class="qtag" id="qTag">课后练习</div>
+  <h2 id="qTitle" style="min-height:64px"></h2>
+  <div id="qOpts"></div>
+  <div class="explain" id="qExplain"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:18px">
+    <span class="progress-num" id="qProgress"></span>
+    <button class="btn primary hidden" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</section>
+
+<section class="slide" id="resultSlide">
+  <div class="kicker">本课完成</div>
+  <h2>你的成绩</h2>
+  <div class="card" style="text-align:center;padding:36px;margin-top:8px">
+    <div class="score-big" id="finalScore">0 / 4</div>
+    <p id="finalMsg" style="color:var(--muted)"></p>
+    <button class="btn" style="margin-top:22px" onclick="startQuiz()">再练一次</button>
+  </div>
+  <div class="card" style="margin-top:16px;background:var(--teal50);border-color:transparent">
+    <p style="font-size:15px"><b>本课四件套：</b><span style="color:var(--teal800)">列表装一串（序号从 0 起）；if 做判断（冒号+缩进）；for 逐条干；字典按标签存。作业：给筛选器加一个新类别（如含"讲座"）。</span></p>
+  </div>
+  <p class="meta">官方出处：Python 官方教程第 3 章（An Informal Introduction）与第 4 章数据结构（docs.python.org/zh-cn/3/tutorial/datastructures.html）· 下一课：综合实战</p>
+</section>
+
+</div>
+
+<div class="nav">
+  <button class="btn" id="prevBtn" onclick="move(-1)">← 上一页</button>
+  <div class="dots" id="dots"></div>
+  <button class="btn primary" id="nextBtn" onclick="move(1)">下一页 →</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const dotsBox=document.getElementById('dots');
+let cur=0;
+slides.forEach((s,i)=>{const d=document.createElement('button');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  [...dotsBox.children].forEach((d,k)=>d.classList.toggle('on',k===cur));
+  document.getElementById('prevBtn').disabled=cur===0;
+  document.getElementById('nextBtn').disabled=cur===slides.length-1;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function move(d){go(cur+d)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown')move(1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')move(-1);
+});
+const QUIZ=[
+ {q:'titles = ["甲", "乙", "丙"]，titles[1] 取出的是哪条？',
+  opts:['"甲"','"乙"','"丙"','报错'],
+  a:1,
+  ex:'列表序号从 0 开始：titles[0] 是"甲"，titles[1] 是"乙"。这是本课最重要的细节。'},
+ {q:'if 条件成立后要执行的行，必须怎样？',
+  opts:['用大括号包起来','缩进（通常 4 个空格）','全部写成一行','加个感叹号'],
+  a:1,
+  ex:'在 Python 里，缩进本身就是语法：它告诉电脑"这几行属于 if"。条件行末尾还要有冒号。'},
+ {q:'判断"两个值是否相等"，用哪个符号？',
+  opts:['=','==','!=','=>'],
+  a:1,
+  ex:'= 是赋值（装盒子），== 才是比较。新手最常见报错之一就是把 == 写成 =。'},
+ {q:'for t in titles: 的意思是？',
+  opts:['重复 100 次','对 titles 里的每一项，各执行一次循环体','把 titles 复制一份','打印 titles'],
+  a:1,
+  ex:'读作"对列表里的每个 t"：列表有几项，循环体就跑几次，t 依次等于每一项。'}
+];
+let qi=0,score=0,answered=false;
+function startQuiz(){qi=0;score=0;go(slides.indexOf(document.getElementById('quizSlide')));renderQ();}
+function renderQ(){
+  answered=false;
+  const q=QUIZ[qi];
+  document.getElementById('qTag').textContent='课后练习 · 第 '+(qi+1)+' 题 / 共 '+QUIZ.length+' 题';
+  document.getElementById('qTitle').textContent=q.q;
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.add('hidden');
+  const ex=document.getElementById('qExplain');
+  ex.classList.remove('show');ex.textContent='';
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  q.opts.forEach((t,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+i)+'. '+t;
+    b.onclick=()=>pick(i,b);
+    box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=QUIZ[qi];
+  const opts=[...document.querySelectorAll('#qOpts .opt')];
+  opts.forEach(o=>o.disabled=true);
+  opts[q.a].classList.add('correct');
+  if(i===q.a){score++;}else{btn.classList.add('wrong');}
+  const ex=document.getElementById('qExplain');
+  ex.textContent=(i===q.a?'✔ 答对了！':'✘ 再想想～正确答案是 '+String.fromCharCode(65+q.a)+'。')+' '+q.ex;
+  ex.classList.add('show');
+  document.getElementById('qProgress').textContent='当前得分：'+score;
+  document.getElementById('qNext').classList.remove('hidden');
+}
+function nextQ(){
+  qi++;
+  if(qi<QUIZ.length){renderQ();}
+  else{
+    document.getElementById('finalScore').textContent=score+' / '+QUIZ.length;
+    document.getElementById('finalMsg').textContent=
+      score===4?'满分！下节课做综合项目。':score>=2?'不错！错题页再翻翻。':'把跟练代码逐行读一遍，再看测验。';
+    go(slides.indexOf(document.getElementById('resultSlide')));
+  }
+}
+go(0);
+</script>
+</body>
+</html>
